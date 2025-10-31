@@ -1,0 +1,188 @@
+# Operating System Files
+# ------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Editor and IDE Files
+# --------------------
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.swn
+.*.swp
+.*.swo
+.*.swn
+Session.vim
+
+# Emacs
+*~
+\#*\#
+.\#*
+.emacs.desktop
+.emacs.desktop.lock
+
+# MATLAB
+# ------
+
+# MATLAB autosave files
+*.asv
+
+# Simulink autosave files
+*.slxc
+*.slx.r*
+*.mdl.r*
+
+# MATLAB compiled files
+*.mex*
+
+# MATLAB packaged apps
+*.mlappinstall
+
+# MATLAB project files
+*.prj
+
+# Simulink cache files
+slprj/
+sccprj/
+*.slxc
+
+# Node.js (if npm is used for any tooling)
+# -----------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python (if Python scripts are used)
+# ------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Testing
+# -------
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+test-report/
+
+# Build and Distribution
+# ----------------------
+dist/
+build/
+*.egg-info/
+
+# Documentation Build
+# -------------------
+docs/_build/
+docs/.doctrees/
+*.pdf
+
+# Logs
+# ----
+*.log
+logs/
+*.log.*
+
+# Temporary Files
+# ---------------
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+tmp/
+temp/
+
+# Cache
+# -----
+.cache/
+*.cache
+
+# Environment Variables
+# ---------------------
+.env
+.env.local
+.env.*.local
+
+# Secrets and Credentials
+# -----------------------
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+credentials/
+
+# Archives
+# --------
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Custom / Project Specific
+# -------------------------
+
+# Local development configs
+local-config/
+
+# User-specific plugin modifications
+*.user.md
+
+# Generated test data
+test-data/
+
+# Performance profiling results
+*.profile
+
+# Debugging files
+debug/
+
+# Local notes
+notes.md
+TODO.md
+scratch/

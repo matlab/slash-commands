@@ -1,0 +1,21 @@
+{
+  "name": "matlab-slash-commands",
+  "version": "0.1.0",
+  "description": "Essential slash commands for MATLAB development workflows in Claude Code",
+  "author": {
+    "name": "The MathWorks, Inc.",
+    "url": "https://github.com/matlab/slash-commands"
+  },
+  "homepage": "https://github.com/matlab/slash-commands",
+  "repository": "https://github.com/matlab/slash-commands",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "matlab",
+    "slash-commands",
+    "development",
+    "testing",
+    "documentation",
+    "optimization",
+    "code-quality"
+  ]
+}

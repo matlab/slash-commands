@@ -1,0 +1,39 @@
+{
+  "name": "matlab-slash-commands",
+  "owner": {
+    "name": "matlab",
+    "github": "matlab"
+  },
+  "plugins": [
+    {
+      "name": "matlab-slash-commands",
+      "version": "0.1.0",
+      "description": "Essential slash commands for MATLAB development workflows in Claude Code",
+      "author": {
+        "name": "The MathWorks, Inc.",
+        "url": "https://github.com/matlab"
+      },
+      "repository": "https://github.com/matlab/slash-commands",
+      "homepage": "https://github.com/matlab/slash-commands",
+      "license": "BSD-3-Clause",
+      "tags": [
+        "matlab",
+        "development",
+        "testing",
+        "documentation"
+      ],
+      "commands": [
+        "./commands/core/matlab-readme.md",
+        "./commands/core/matlab-docs.md",
+        "./commands/core/matlab-livescript.md",
+        "./commands/testing/matlab-test.md",
+        "./commands/testing/matlab-property-test.md",
+        "./commands/quality/matlab-optimize.md",
+        "./commands/quality/matlab-errors.md",
+        "./commands/development/matlab-explain.md",
+        "./commands/development/matlab-refine.md"
+      ],
+      "source": "./"
+    }
+  ]
+}
