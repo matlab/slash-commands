@@ -1,7 +1,7 @@
 {
   "name": "matlab-slash-commands",
-  "version": "0.1.0",
-  "description": "Essential slash commands for MATLAB development workflows in Claude Code",
+  "version": "0.2.0",
+  "description": "Slash commands for MATLAB development workflows — documentation, testing, optimization, code analysis, and MCP integration",
   "author": {
     "name": "The MathWorks, Inc.",
     "url": "https://github.com/matlab/slash-commands"
@@ -16,6 +16,13 @@
     "testing",
     "documentation",
     "optimization",
-    "code-quality"
-  ]
+    "code-quality",
+    "mcp"
+  ],
+  "mcp_servers": {
+    "matlab-mcp-core-server": {
+      "description": "Optional. Enables live code execution, Code Analyzer, test running, and toolbox detection. Install from https://github.com/matlab/matlab-mcp-core-server",
+      "required": false
+    }
+  }
 }

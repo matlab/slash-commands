@@ -1,245 +1,146 @@
-# MATLAB Slash Commands for Claude Code
+# MATLAB Slash Commands
 
-A collection of slash commands for MATLAB development workflows in Claude Code. These commands provide access to MATLAB development capabilities including documentation generation, testing, optimization, and code analysis.
+Slash commands for MATLAB development workflows across multiple AI coding agents. Provides documentation generation, testing, optimization, code analysis, and live execution via MCP.
 
-## Features
+## Multi-Agent Support
 
-- **Commands** covering documentation, testing, quality, and development workflows
-- **Integrated with MATLAB Best Practices** from matlab/prompts and matlab/skills repositories
-- **Templates** for tests, documentation, and code optimization
-- **Optimizations** leveraging vectorization and built-in functions
-- **Error Handling** patterns and input validation
+| Agent | Format | Commands | Install |
+|-------|--------|----------|---------|
+| **Claude Code** | Plugin | All 13 | `/plugin install github:matlab/slash-commands` |
+| **GitHub Copilot** | `.prompt.md` | 6 key commands | Copy `copilot/prompts/` to `.github/prompts/` |
+| **Cursor IDE** | `.mdc` rules | Rules (always-on) | Copy `cursor/rules/` to `.cursor/rules/` |
+| **Any MCP agent** | MCP server | Via MATLAB MCP Core Server | See [MCP Guide](docs/mcp-integration.md) |
+
+## MCP Integration
+
+When the [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) is connected, commands gain live capabilities:
+
+| MCP Tool | What It Enables |
+|----------|----------------|
+| `check_matlab_code` | Real Code Analyzer diagnostics |
+| `evaluate_matlab_code` | Execute MATLAB expressions, benchmark code |
+| `run_matlab_file` | Run .m files and return output |
+| `run_matlab_test_file` | Execute test suites and report results |
+| `detect_matlab_toolboxes` | List installed toolboxes |
+
+All commands work without MCP. They generate code and instructions as before. MCP adds validation, execution, and measurement. See [MCP Integration Guide](docs/mcp-integration.md).
 
 ## Installation
 
-### Via Claude Code Marketplace (Recommended)
-
-Once published to the Claude Code marketplace, you can install directly:
+### Claude Code (Full Support)
 
 ```bash
-# Install from marketplace
-/plugin install matlab-slash-commands
-```
-
-### Via GitHub Repository
-
-```bash
-# Install directly from GitHub
 /plugin install github:matlab/slash-commands
 ```
 
-### Manual Installation
+### GitHub Copilot
 
-1. Clone this repository:
+```bash
+cp -r copilot/prompts/ .github/prompts/
+```
+
+### Cursor IDE
+
+```bash
+mkdir -p .cursor/rules
+cp cursor/rules/matlab-development.mdc .cursor/rules/
+```
+
+### Manual / Development
+
 ```bash
 git clone https://github.com/matlab/slash-commands.git
 ```
 
-2. Navigate to the repository:
-```bash
-cd slash-commands
-```
-
-3. The plugin is ready to use with the provided `.claude-plugin/` directory
-
-4. For system-wide installation, copy the plugin files:
-```bash
-# Windows
-xcopy /E /I .claude-plugin %APPDATA%\Claude\plugins\matlab-slash-commands
-
-# macOS/Linux
-cp -r .claude-plugin ~/.claude/plugins/matlab-slash-commands
-```
-
-5. Restart Claude Code or reload plugins using `/plugin reload`
-
-## Quick Start
-
-### Generate Project Documentation
-```
-/matlab-readme
-```
-Analyzes your MATLAB project and generates a README.md with project structure, requirements, and usage examples.
-
-### Create Unit Tests
-```
-/matlab-test myFunction
-```
-Generates a test class with unit tests, edge cases, and performance benchmarks for your MATLAB function.
-
-### Optimize Performance
-```
-/matlab-optimize
-```
-Analyzes selected code and applies MATLAB-specific optimizations including vectorization, preallocation, and efficient built-in usage.
-
 ## Available Commands
 
-### Core Documentation Commands
+### Core Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `/matlab-readme` | Generate project README | `/matlab-readme` |
-| `/matlab-docs` | Document MATLAB function with help text | `/matlab-docs functionName` |
-| `/matlab-livescript` | Create formatted Live Script | `/matlab-livescript "Signal Processing Demo"` |
+| Command | Description | MCP Enhanced |
+|---------|-------------|:------------:|
+| `/matlab-readme` | Generate project README | Yes |
+| `/matlab-docs` | Document MATLAB functions | Yes |
+| `/matlab-livescript` | Create formatted Live Scripts | Yes |
+| `/matlab-check` | Run Code Analyzer on code | **MCP** |
+| `/matlab-run` | Execute MATLAB code or files | **MCP** |
 
-### Testing & Quality Commands
+### Testing Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `/matlab-test` | Generate unit tests for functions | `/matlab-test calculateMetrics` |
-| `/matlab-property-test` | Create property-based tests | `/matlab-property-test matrixOperation` |
-| `/matlab-optimize` | Optimize code performance | `/matlab-optimize` |
-| `/matlab-errors` | Add error handling and validation | `/matlab-errors` |
+| Command | Description | MCP Enhanced |
+|---------|-------------|:------------:|
+| `/matlab-test` | Generate unit tests | Yes |
+| `/matlab-property-test` | Create property-based tests | Yes |
+| `/matlab-run-tests` | Run test suite and report results | **MCP** |
+
+### Quality Commands
+
+| Command | Description | MCP Enhanced |
+|---------|-------------|:------------:|
+| `/matlab-optimize` | Optimize code performance | Yes |
+| `/matlab-errors` | Add error handling and validation | Yes |
 
 ### Development Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `/matlab-explain` | Explain code functionality and algorithms | `/matlab-explain` |
-| `/matlab-refine` | Refine prompts into detailed specifications | `/matlab-refine "process sensor data"` |
+| Command | Description | MCP Enhanced |
+|---------|-------------|:------------:|
+| `/matlab-explain` | Explain code functionality | Yes |
+| `/matlab-refine` | Refine requirements into specs | Yes |
+| `/matlab-toolboxes` | Detect installed toolboxes | **MCP** |
 
-## Command Details
+**MCP Enhanced** = works without MCP but gains live capabilities with it
+**MCP** = primarily designed for MCP, with static fallback
 
-### `/matlab-readme` - Project Documentation Generator
-Scans your project directory and creates a README with:
-- Project overview and features
-- Installation instructions
-- Usage examples with code
-- API documentation
-- Testing instructions
-- License information
+## Quick Start
 
-### `/matlab-docs` - Function Documentation
-Generates MATLAB help text following MathWorks standards:
-- H1 line and detailed description
-- Input/output specifications
-- Usage examples
-- Error conditions
-- See also references
-
-### `/matlab-test` - Unit Test Generator
-Creates test classes using MATLAB Unit Testing Framework:
-- Setup and teardown methods
-- Parameterized tests
-- Performance benchmarks
-- Edge case validation
-- Mock object suggestions
-
-### `/matlab-optimize` - Performance Optimizer
-Applies MATLAB-specific optimizations:
-- Vectorization of loops
-- Preallocation strategies
-- Built-in function usage
-- Memory optimization
-- Parallel computing suggestions
-
-### `/matlab-errors` - Error Handling
-Adds error handling:
-- Input validation with arguments blocks
-- Try-catch patterns
-- Custom error messages
-- Warning management
-- Resource cleanup
-
-## Example Workflows
-
-### Complete Function Development
-```matlab
-% 1. Start with requirements refinement
-/matlab-refine "Create function to analyze time series data"
-
-% 2. Implement the function based on refined specs
-function results = analyzeTimeSeries(data, options)
-    % Implementation here
-end
-
-% 3. Add documentation
-/matlab-docs analyzeTimeSeries
-
-% 4. Optimize for performance
-/matlab-optimize
-
-% 5. Add error handling
-/matlab-errors
-
-% 6. Generate unit tests
-/matlab-test analyzeTimeSeries
-
-% 7. Create project documentation
-/matlab-readme
+### Generate and Validate Tests (with MCP)
+```
+/matlab-test myFunction        # Generate tests
+/matlab-run-tests              # Run them via MCP, see pass/fail
 ```
 
-### Test-Driven Development
-```matlab
-% 1. Define requirements
-/matlab-refine "Statistical analysis function"
-
-% 2. Generate tests first
-/matlab-test statisticalAnalysis
-/matlab-property-test statisticalAnalysis
-
-% 3. Implement to pass tests
-% ... write code ...
-
-% 4. Optimize and document
-/matlab-optimize
-/matlab-docs statisticalAnalysis
+### Optimize with Real Benchmarks (with MCP)
+```
+/matlab-optimize               # Optimizes and benchmarks before/after
 ```
 
-## Integration with MATLAB Workflows
+### Full Development Pipeline
+```
+/matlab-refine "process sensor data"    # Clarify requirements
+/matlab-test processData                # Generate tests
+/matlab-check processData.m            # Run Code Analyzer
+/matlab-optimize                        # Optimize performance
+/matlab-errors                          # Add error handling
+/matlab-docs processData               # Generate documentation
+/matlab-readme                          # Generate project README
+```
 
-These commands integrate seamlessly with:
-- **MATLAB Editor**: Copy generated code directly
-- **Live Editor**: Create formatted Live Scripts
-- **Testing Framework**: Compatible with `runtests` command
-- **Code Analyzer**: Follows mlint guidelines
-- **Doc Generation**: Works with `publish` and `help`
+## Documentation
 
-## Best Practices
-
-1. **Start with `/matlab-refine`** to clarify requirements
-2. **Use `/matlab-test`** early for test-driven development
-3. **Apply `/matlab-optimize`** after functionality is complete
-4. **Always add `/matlab-errors`** for production code
-5. **Document with `/matlab-docs`** for team collaboration
+- [Command Reference](docs/command-reference.md): Reference for all 13 commands
+- [MCP Integration Guide](docs/mcp-integration.md): Setup and usage with MATLAB MCP Core Server
+- [Cross-Agent Support](docs/cross-agent-support.md): Using commands with Copilot, Cursor, etc.
+- [Usage Guide](docs/usage-guide.md): Development patterns and best practices
+- [Installation Guide](docs/installation.md): Setup instructions for all agents
+- [Examples](examples/): Complete workflow examples
 
 ## Requirements
 
-- Claude Code CLI
+- An AI coding agent (Claude Code, GitHub Copilot, Cursor, or any MCP-compatible agent)
 - MATLAB development environment (for running generated code)
-- Optional: MATLAB toolboxes for specific functionality
+- Optional: [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) for live execution
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
-- Adding new commands
-- Improving existing commands
-- Reporting issues
-- Suggesting enhancements
-
-### Creating New Commands
-
-1. Use the template in `templates/command-template.md`
-2. Follow the established command structure
-3. Add comprehensive examples
-4. Update plugin.json
-5. Submit a pull request
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding commands, improving existing ones, and maintaining cross-agent formats.
 
 ## License
 
-BSD 3-Clause License - see [LICENSE](LICENSE) file.
+BSD 3-Clause License. See [LICENSE](LICENSE).
 
 Copyright (c) 2025, The MathWorks, Inc.
 
 ## Related Projects
 
-- [matlab/prompts](https://github.com/matlab/prompts) - Collection of MATLAB prompts for AI assistants
-- [matlab/skills](https://github.com/matlab/skills) - Claude Code skills for MATLAB
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/matlab/slash-commands/issues)
-- **Discussions**: [MATLAB Central](https://www.mathworks.com/matlabcentral/)
-- **Documentation**: [Command Reference](docs/command-reference.md)
-
+- [matlab/matlab-mcp-core-server](https://github.com/matlab/matlab-mcp-core-server): MATLAB MCP server for AI agent integration
+- [matlab/prompts](https://github.com/matlab/prompts): MATLAB prompts for AI assistants and copilots
+- [matlab/skills](https://github.com/matlab/skills): Agents Skills for MATLAB

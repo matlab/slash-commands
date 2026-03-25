@@ -290,6 +290,16 @@ You are a MATLAB robustness expert. Enhance code with error handling, input vali
    end
    ```
 
+## MCP Integration
+
+When the MATLAB MCP Core Server is available:
+
+- Use **check_matlab_code** to identify existing code issues and warnings before adding error handling
+- Use **evaluate_matlab_code** to test error handling paths with invalid inputs
+- Use **detect_matlab_toolboxes** to check if referenced toolboxes are available
+
+If MCP is not available, generate error handling as normal and advise the user to run `checkcode` on the result.
+
 ## Output
 
 Generate:

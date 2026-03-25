@@ -190,7 +190,7 @@ end
 
 ## Step 4: Add Error Handling
 
-Make the optimized code robust:
+Add error handling to the optimized code:
 
 ```
 /matlab-errors
@@ -252,9 +252,9 @@ end
 1. **Preallocation**: Eliminated dynamic array growth
 2. **Vectorization**: Removed inner loops
 3. **Logical Indexing**: Replaced conditional loops
-4. **Built-in Functions**: Used optimized MATLAB functions
+4. **Built-in Functions**: Used optimized MATLAB functions (`mean`, `max`, `normalize`)
 5. **Broadcasting**: Efficient array operations
-6. **Parallel Option**: Added parfor for large datasets
+6. **Parallel Option**: Added `parfor` for large datasets
 
 ## Step 6: Memory Optimization
 
@@ -309,17 +309,17 @@ end
 1. **Profile First**: Identify bottlenecks before optimizing
 2. **Vectorize**: Replace loops with array operations
 3. **Preallocate**: Reserve memory upfront
-4. **Use Built-ins**: Leverage optimized MATLAB functions
+4. **Use Built-ins**: Use optimized MATLAB functions
 5. **Parallel Processing**: Use parfor for independent iterations
 6. **Memory Management**: Process in chunks for huge datasets
 7. **Measure Impact**: Always benchmark improvements
 
-## Conclusion
+## Results Summary
 
-The optimization workflow transformed slow, inefficient code into a production-ready implementation with:
-- ✅ 20-30x performance improvement
-- ✅ Memory-efficient processing
-- ✅ Scalability to large datasets
-- ✅ Optional parallel processing
-- ✅ Robust error handling
-- ✅ Maintained readability
+The optimized implementation provides:
+- 20-30x performance improvement
+- Memory-efficient processing
+- Scalability to large datasets
+- Optional parallel processing
+- Input validation and error handling
+- Maintained readability

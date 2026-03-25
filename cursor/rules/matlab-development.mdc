@@ -1,0 +1,48 @@
+---
+description: MATLAB development best practices and coding standards
+globs: ["*.m", "*.mlx", "*.mlapp"]
+alwaysApply: false
+---
+
+# MATLAB Development Rules
+
+## Code Style
+- Use camelCase for variables and functions, PascalCase for classes
+- Functions should have H1 line documentation
+- Use `arguments` blocks for input validation (R2019b+)
+- End statements with semicolons to suppress output (except when debugging)
+- One function per file (except local/nested functions)
+
+## Performance
+- Vectorize operations instead of using loops where possible
+- Preallocate arrays before loops: `result = zeros(n, 1);`
+- Use built-in functions (`mean`, `sum`, `max`) instead of manual loops
+- Use logical indexing: `data(data > threshold)` instead of `find` + index
+- MATLAB is column-major — iterate over columns, not rows
+- Use `sparse()` for matrices with >70% zeros
+
+## Testing
+- Use MATLAB Unit Testing Framework: `classdef TestX < matlab.unittest.TestCase`
+- Name test files with `Test` prefix or suffix
+- Use verification methods: `verifyEqual`, `verifyError`, `verifySize`
+- Use tolerances for floating-point: `verifyEqual(tc, a, b, 'AbsTol', 1e-10)`
+- Include parameterized tests for multiple input combinations
+- Test edge cases: empty, scalar, NaN, Inf, large arrays
+
+## Error Handling
+- Use `arguments` blocks for type/size validation
+- Use structured error IDs: `'functionName:ErrorType'`
+- Clean up resources with `onCleanup`
+- Use `try`/`catch ME` with `ME.identifier` for specific handling
+- Validate numeric ranges, dimensions, and types
+
+## Documentation
+- H1 line: `%FUNCTIONNAME Brief description`
+- Include input/output specs, examples, and See also references
+- Use `%%` section breaks in scripts for Live Editor compatibility
+
+## File Organization
+- One public function per file
+- Group related functions in packages (`+packageName/`)
+- Tests in `tests/` directory
+- Examples in `examples/` directory

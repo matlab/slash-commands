@@ -57,6 +57,16 @@ You are a MATLAB documentation expert. Analyze the current directory and generat
    - Research code: Include citation information and paper references
    - Educational: Add learning objectives and exercises
 
+## MCP Integration
+
+When the MATLAB MCP Core Server is available, enhance this command:
+
+- Use **detect_matlab_toolboxes** to auto-populate the Requirements section with actually installed toolboxes
+- Use **check_matlab_code** on any example code snippets to ensure they are valid
+- Use **run_matlab_file** on the project's main entry point to verify the usage examples work
+
+If MCP is not available, note in the output that the user should verify toolbox requirements manually.
+
 ## Output
 
 Generate a complete README.md file that:

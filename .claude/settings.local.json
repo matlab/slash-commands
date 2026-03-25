@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "mcp__matlab__detect_matlab_toolboxes",
+      "mcp__matlab__evaluate_matlab_code"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "matlab"
+  ],
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  }
+}

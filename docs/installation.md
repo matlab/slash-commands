@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide covers different methods to install MATLAB Slash Commands for Claude Code.
+Install MATLAB Slash Commands for Claude Code using one of the methods below.
 
 ## Prerequisites
 
@@ -75,6 +75,36 @@ mklink /D "%APPDATA%\claude\plugins\matlab-slash-commands" "%CD%"
 ln -s $(pwd) ~/.claude/plugins/matlab-slash-commands
 ```
 
+### Method 4: GitHub Copilot
+
+Copy the prompt files to your repository:
+
+```bash
+# From the cloned repo
+cp -r copilot/prompts/ /path/to/your/repo/.github/prompts/
+```
+
+Commands appear as slash commands in Copilot Chat (VS Code, JetBrains). 6 key commands available.
+
+### Method 5: Cursor IDE
+
+Copy the rules file to your project:
+
+```bash
+mkdir -p /path/to/your/project/.cursor/rules
+cp cursor/rules/matlab-development.mdc /path/to/your/project/.cursor/rules/
+```
+
+Provides always-on MATLAB context for `.m`, `.mlx`, and `.mlapp` files.
+
+### MCP Server Setup (Optional, All Agents)
+
+The MATLAB MCP Core Server enables live code execution across any agent:
+
+1. Install from [github.com/matlab/matlab-mcp-core-server](https://github.com/matlab/matlab-mcp-core-server)
+2. Configure your agent (see [MCP Integration Guide](mcp-integration.md))
+3. Verify with `/matlab-toolboxes` (Claude Code) or check toolbox listing
+
 ## Configuration
 
 ### Plugin Settings
@@ -139,6 +169,13 @@ python -m json.tool .claude-plugin/plugin.json
 1. Check command file exists in correct location
 2. Verify markdown frontmatter is properly formatted
 3. Ensure no syntax errors in command content
+
+### MCP Server Not Connecting
+
+1. Verify MATLAB is installed and on the PATH
+2. Check the MCP server logs for errors
+3. Ensure the MATLAB MCP Core Server is running
+4. See [MCP Integration Guide](mcp-integration.md) for detailed troubleshooting
 
 ### Version Conflicts
 
@@ -223,4 +260,4 @@ After installation:
 1. Read the [Usage Guide](usage-guide.md)
 2. Review [Command Reference](command-reference.md)
 3. Try example workflows in the main README
-4. Customize commands for your workflow
+4. Customize commands for your development process

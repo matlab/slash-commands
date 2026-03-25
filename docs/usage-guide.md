@@ -1,6 +1,6 @@
 # Usage Guide
 
-Learn how to effectively use MATLAB Slash Commands in your development workflow.
+How to use MATLAB Slash Commands in your development process.
 
 ## Getting Started
 
@@ -99,7 +99,7 @@ end
 
 ### Documentation Commands
 
-Perfect for creating professional documentation:
+Create project and function documentation:
 
 - **`/matlab-readme`**: Complete project documentation
 - **`/matlab-docs`**: Function-level documentation
@@ -109,7 +109,7 @@ Perfect for creating professional documentation:
 
 ### Testing Commands
 
-Ensure code reliability:
+Verify code reliability:
 
 - **`/matlab-test`**: Unit tests with coverage
 - **`/matlab-property-test`**: Mathematical property verification
@@ -118,16 +118,16 @@ Ensure code reliability:
 
 ### Quality Commands
 
-Improve code quality and performance:
+Improve code performance and correctness:
 
 - **`/matlab-optimize`**: Performance enhancements
-- **`/matlab-errors`**: Robust error handling
+- **`/matlab-errors`**: Error handling and input validation
 
 **Best Practice**: Optimize after functionality is complete and tested.
 
 ### Development Commands
 
-Understand and refine code:
+Analyze and refine code:
 
 - **`/matlab-explain`**: Understand complex algorithms
 - **`/matlab-refine`**: Clarify vague requirements
@@ -135,6 +135,36 @@ Understand and refine code:
 **Best Practice**: Use early in development to clarify goals.
 
 ## Advanced Usage
+
+### MCP-Powered Workflows
+
+When the MATLAB MCP Core Server is connected, commands gain live capabilities:
+
+```matlab
+% Run Code Analyzer, get real diagnostics
+/matlab-check myFunction.m
+
+% Generate tests AND run them immediately
+/matlab-test myFunction
+/matlab-run-tests
+
+% Optimize with actual benchmarks
+/matlab-optimize
+% Output includes real before/after timing via MCP
+
+% Check environment
+/matlab-toolboxes
+```
+
+### Using Commands Across Agents
+
+These commands are available in multiple formats:
+- **Claude Code**: Full plugin with all 13 commands
+- **GitHub Copilot**: 6 key commands as `.prompt.md` files
+- **Cursor IDE**: MATLAB rules for always-on context
+- **Any MCP agent**: Live execution via MATLAB MCP Core Server
+
+See [Cross-Agent Support](cross-agent-support.md) for details.
 
 ### Chaining Commands
 
@@ -277,11 +307,15 @@ Keep documentation current:
 | Clarify requirements | `/matlab-refine` | Project start |
 | Generate tests | `/matlab-test` | Before/after implementation |
 | Optimize speed | `/matlab-optimize` | After functionality complete |
-| Add robustness | `/matlab-errors` | Before production |
+| Add error handling | `/matlab-errors` | Before production |
 | Document function | `/matlab-docs` | After implementation |
 | Create tutorial | `/matlab-livescript` | For teaching/sharing |
 | Document project | `/matlab-readme` | Project milestones |
 | Understand code | `/matlab-explain` | Working with unknown code |
+| Run Code Analyzer | `/matlab-check` | After implementation |
+| Execute code | `/matlab-run` | Testing/debugging |
+| Run test suite | `/matlab-run-tests` | After writing tests |
+| Check toolboxes | `/matlab-toolboxes` | Project start |
 
 ## Next Steps
 

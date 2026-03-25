@@ -334,6 +334,16 @@ You are a MATLAB property-based testing expert. Create tests that verify mathema
    - Test edge cases within properties
    - Make tests deterministic with seeded randomness
 
+## MCP Integration
+
+When the MATLAB MCP Core Server is available:
+
+- Use **run_matlab_test_file** to execute property tests and verify all properties hold
+- Use **evaluate_matlab_code** to test random input generation produces valid test data
+- Report which properties passed and any that failed with counterexamples
+
+If MCP is not available, generate property tests as normal and instruct the user to run them manually.
+
 ## Output
 
 Generate:

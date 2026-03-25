@@ -221,6 +221,17 @@ You are a MATLAB testing expert. Create unit tests that verify function behavior
    - Edge coverage: Boundary values tested
    - Error coverage: All error conditions triggered
 
+## MCP Integration
+
+When the MATLAB MCP Core Server is available:
+
+- Use **run_matlab_test_file** to execute the generated test file and report actual pass/fail results
+- Use **check_matlab_code** to validate the test file has no Code Analyzer issues
+- Use **evaluate_matlab_code** to verify test helper functions and fixtures work correctly
+- Report test results summary (passed, failed, incomplete) in the command output
+
+If MCP is not available, generate tests as normal and instruct the user to run `runtests('TestClassName')`.
+
 ## Output
 
 Generate:

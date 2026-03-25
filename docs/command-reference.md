@@ -1,6 +1,6 @@
 # Command Reference
 
-Complete reference for all MATLAB Slash Commands including parameters, options, and examples.
+Reference for all MATLAB Slash Commands, including parameters, options, and examples.
 
 ## Core Documentation Commands
 
@@ -243,6 +243,97 @@ Transform vague requirements into detailed specifications.
 - Performance requirements
 - Error handling strategy
 
+## MCP-Powered Commands
+
+These commands are designed primarily for use with the MATLAB MCP Core Server. They provide static fallback when MCP is not available.
+
+---
+
+### `/matlab-check`
+
+Run MATLAB Code Analyzer on files or code.
+
+**Parameters:**
+- `file_or_code` (optional) - File path or code to analyze
+
+**MCP Tools Used:** `check_matlab_code`, `evaluate_matlab_code`
+
+**Features:**
+- Real Code Analyzer diagnostics (with MCP)
+- Issue categorization: errors, warnings, performance, style
+- Fix suggestions with corrected code
+- Static pattern analysis (without MCP)
+
+**Example:**
+```
+/matlab-check myFunction.m
+```
+
+---
+
+### `/matlab-run`
+
+Execute MATLAB code or files via MCP.
+
+**Parameters:**
+- `file_or_expression` (optional) - File path or MATLAB expression
+
+**MCP Tools Used:** `run_matlab_file`, `evaluate_matlab_code`, `check_matlab_code`, `detect_matlab_toolboxes`
+
+**Features:**
+- Live code execution with formatted results
+- Pre-execution validation
+- Error handling with fix suggestions
+- Execution timing
+
+**Example:**
+```
+/matlab-run "x = magic(5); disp(x)"
+```
+
+---
+
+### `/matlab-run-tests`
+
+Run MATLAB test suite and report results.
+
+**Parameters:**
+- `test_target` (optional) - Test file, folder, or test name
+
+**MCP Tools Used:** `run_matlab_test_file`, `evaluate_matlab_code`, `check_matlab_code`
+
+**Features:**
+- Automated test discovery and execution
+- Pass/fail/incomplete reporting
+- Failure analysis with root cause suggestions
+- Performance reporting
+
+**Example:**
+```
+/matlab-run-tests tests/
+```
+
+---
+
+### `/matlab-toolboxes`
+
+Detect installed MATLAB toolboxes and provide recommendations.
+
+**Parameters:** None
+
+**MCP Tools Used:** `detect_matlab_toolboxes`, `evaluate_matlab_code`, `check_matlab_code`
+
+**Features:**
+- Installed toolbox inventory
+- Project dependency analysis
+- Usage recommendations for unused toolboxes
+- Missing dependency warnings
+
+**Example:**
+```
+/matlab-toolboxes
+```
+
 ## Command Options and Flags
 
 While commands don't have explicit flags, they adapt based on context:
@@ -364,6 +455,16 @@ Generated code is:
 - Diff-friendly (logical organization)
 - Merge-friendly (minimal conflicts)
 
+### MATLAB MCP Core Server
+
+Commands can use the MCP Core Server for:
+- Live code execution and validation
+- Real Code Analyzer diagnostics
+- Automated test execution
+- Toolbox detection
+
+See [MCP Integration Guide](mcp-integration.md) for setup.
+
 ## Customization
 
 ### Modifying Commands
@@ -383,17 +484,13 @@ cp commands/testing/matlab-test.md commands/testing/matlab-integration-test.md
 
 ## FAQ
 
-**Q: Can I use commands on multiple files?**
-A: Commands typically work on single files or selections. For multiple files, run the command multiple times.
+**Multiple files.** Commands work on single files or selections. For multiple files, run the command once per file.
 
-**Q: Do commands require MATLAB to be installed?**
-A: No, commands generate code without requiring MATLAB. However, you need MATLAB to run the generated code.
+**MATLAB not installed.** Commands generate code without requiring MATLAB. You need MATLAB only to run the generated code.
 
-**Q: Can commands modify existing files?**
-A: Commands generate new code. You manually integrate it with existing files.
+**Modifying existing files.** Commands generate new code. You manually integrate it with existing files.
 
-**Q: How do I update command output style?**
-A: Edit the command markdown file to customize output format.
+**Updating command output style.** Edit the command markdown file to customize output format.
 
 ## Getting Help
 

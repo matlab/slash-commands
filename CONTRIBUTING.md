@@ -1,6 +1,6 @@
 # Contributing to MATLAB Slash Commands
 
-Thank you for your interest in contributing to MATLAB Slash Commands! This document provides guidelines and instructions for contributing to the project.
+This document provides guidelines and instructions for contributing to MATLAB Slash Commands.
 
 ## Code of Conduct
 
@@ -69,17 +69,13 @@ related_prompts:
 [Command content following template structure]
 ```
 
-3. **Update plugin configuration**:
-Edit `.claude-plugin/plugin.json` to register your command:
+3. **Register in marketplace.json** (the authoritative command registry):
+Edit `.claude-plugin/marketplace.json` to add your command path to the `commands` array:
 ```json
-{
-  "name": "matlab-yourcommand",
-  "description": "Your command description",
-  "file": "commands/category/matlab-yourcommand.md"
-}
+"./commands/category/matlab-yourcommand.md"
 ```
 
-4. **Write comprehensive documentation**:
+4. **Write documentation**:
 - Clear purpose and use cases
 - Detailed instructions
 - Multiple examples
@@ -91,6 +87,18 @@ Edit `.claude-plugin/plugin.json` to register your command:
 - Test with various inputs
 - Ensure error messages are helpful
 - Check performance with large inputs
+
+#### Cross-Agent Formats
+
+When adding a new command, consider whether it should also be available in other formats:
+
+1. **Copilot prompt file**: If the command is generally useful, create a simplified `.prompt.md` version in `copilot/prompts/`. Copilot prompts should be under 200 lines with `description` frontmatter only.
+
+2. **Cursor rules**: If the command introduces new MATLAB best practices, update `cursor/rules/matlab-development.mdc` to include those practices.
+
+3. **MCP awareness**: If the command can benefit from live MATLAB execution, add an `## MCP Integration` section using the pattern in `templates/command-template.md`.
+
+See `scripts/convert-to-copilot.sh` and `scripts/convert-to-cursor.sh` for guidance.
 
 #### Improving Existing Commands
 
@@ -265,4 +273,3 @@ By contributing, you agree that your contributions will be licensed under the BS
 - [MATLAB Style Guide](https://www.mathworks.com/matlabcentral/fileexchange/46056-matlab-style-guidelines-2-0)
 - [Git Best Practices](https://git-scm.com/book/en/v2)
 
-Thank you for contributing to make MATLAB development better with Claude Code!

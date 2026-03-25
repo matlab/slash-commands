@@ -119,6 +119,24 @@ output = functionName(emptyInput);  % Should handle gracefully
 2. **Practice 2**: Another best practice with rationale
 3. **Practice 3**: Common pitfalls to avoid
 
+## MCP Integration
+
+When the MATLAB MCP Core Server is available, enhance this command:
+
+### With MCP Available
+- Use **check_matlab_code** to [describe how this command uses code analysis]
+- Use **evaluate_matlab_code** to [describe how this command uses code execution]
+- Use **run_matlab_file** to [describe how this command uses file execution]
+- Use **run_matlab_test_file** to [describe how this command uses test execution]
+- Use **detect_matlab_toolboxes** to [describe how this command uses toolbox detection]
+
+(Remove any MCP tools not relevant to this command)
+
+### Without MCP
+If the MATLAB MCP Core Server is not connected:
+- [Describe graceful fallback behavior]
+- [Suggest manual verification steps]
+
 ## MATLAB Version Compatibility
 
 - **Minimum version**: R2019b (for arguments block)
@@ -144,11 +162,11 @@ end
 
 ## Notes and Warnings
 
-⚠️ **Important Warning**: Things to be careful about
+**Warning**: Things to be careful about
 
-📝 **Note**: Additional information that's helpful
+**Note**: Additional information that's helpful
 
-💡 **Tip**: Pro tips for advanced usage
+**Tip**: Pro tips for advanced usage
 
 ## Related Commands
 

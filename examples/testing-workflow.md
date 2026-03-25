@@ -1,10 +1,10 @@
 # Testing Workflow Example
 
-This example demonstrates comprehensive testing strategies using MATLAB slash commands.
+This example demonstrates testing strategies for MATLAB code using slash commands.
 
 ## Scenario
 
-You have a complex numerical algorithm that needs thorough testing including unit tests, property-based tests, and performance validation.
+You have a numerical algorithm that requires unit tests, property-based tests, and performance validation.
 
 ## The Function to Test
 
@@ -330,12 +330,12 @@ results = runner.run(suite);
 
 ## Summary
 
-This testing workflow ensures:
-- ✅ Correctness for known cases
-- ✅ Mathematical properties preserved
-- ✅ Performance requirements met
-- ✅ Edge cases handled
-- ✅ Numerical stability verified
-- ✅ Memory efficiency confirmed
+This testing workflow verifies:
+- Correctness for known cases
+- Mathematical properties preserved
+- Performance requirements met
+- Edge cases handled
+- Numerical stability verified
+- Memory efficiency confirmed
 
-The combination of unit tests and property-based tests provides confidence that the implementation is both correct and robust.
+Unit tests and property-based tests together confirm that the implementation is correct and numerically stable.
