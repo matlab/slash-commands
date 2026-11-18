@@ -1,25 +1,25 @@
 # Installation Guide
 
-This guide covers installing MATLAB Slash Commands in Claude Code, GitHub Copilot, and Cursor.
+This guide describes how to install MATLAB Slash Commands in Claude Code, GitHub Copilot, and Cursor.
 
 ## Prerequisites
 
 - Claude Code, GitHub Copilot, or Cursor
-- MATLAB, to run the code the commands write
+- MATLAB, to run the code that the commands write
 - Git, to install from a clone or to copy the Copilot and Cursor files
 
 ## Claude Code
 
 ### Install from the Marketplace
 
-Add this repository as a plugin marketplace, then install the plugin from it:
+Add this repository as a plugin marketplace, and then install the plugin from it:
 
 ```bash
 /plugin marketplace add matlab/slash-commands
 /plugin install matlab-slash-commands@matlab-slash-commands
 ```
 
-From a terminal, run `claude plugin marketplace add matlab/slash-commands` and `claude plugin install matlab-slash-commands@matlab-slash-commands`.
+To install from a terminal instead, run `claude plugin marketplace add matlab/slash-commands` and then `claude plugin install matlab-slash-commands@matlab-slash-commands`.
 
 ### Install from a Clone
 
@@ -38,7 +38,7 @@ Then add the clone as a marketplace and install the plugin:
 
 ### Load a Clone for Development
 
-To edit commands and try them without installing, start Claude Code with the clone as a plugin folder:
+To edit commands and test them without installing the plugin, start Claude Code with the clone as a plugin folder:
 
 ```bash
 claude --plugin-dir ./slash-commands
@@ -58,7 +58,7 @@ Changes to the command files take effect the next time Claude Code starts.
 /plugin update matlab-slash-commands
 ```
 
-For a clone, run `git pull` in the clone first.
+If you installed from a clone, run `git pull` in the clone first.
 
 ### Uninstall
 
@@ -70,7 +70,7 @@ To remove the marketplace as well, run `/plugin marketplace remove matlab-slash-
 
 ## GitHub Copilot
 
-Copilot gets 6 of the 13 commands: check, docs, optimize, readme, run, and test.
+GitHub Copilot supports 6 of the 13 commands: check, docs, optimize, readme, run, and test.
 From a clone of this repository, copy the prompt files into your project:
 
 ```bash
@@ -102,7 +102,7 @@ With the [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) connec
 ## Customize the Commands
 
 Each command is a Markdown file in the `commands/` folder.
-To use your edited copy, install from your clone or load it with `--plugin-dir`.
+To use your edited commands, install the plugin from your clone or load the clone with `--plugin-dir`.
 
 ## Troubleshooting
 
@@ -116,7 +116,7 @@ To use your edited copy, install from your clone or load it with `--plugin-dir`.
 
 1. Check that the frontmatter at the top of the file starts and ends with `---` and has `name` and `description` fields.
 2. Run `claude plugin validate .` in the clone and read its warnings.
-   A missing frontmatter block shows as a warning, not an error.
+   The validator reports a missing frontmatter block as a warning, not an error.
 3. Restart Claude Code.
 
 ### The MCP Server Does Not Connect
