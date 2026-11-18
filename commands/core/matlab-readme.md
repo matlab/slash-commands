@@ -1,11 +1,7 @@
 ---
 name: matlab-readme
 description: Generate project README for MATLAB projects
-category: core
-parameters: []
-tags: [matlab, documentation, readme, project]
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/live-scripts-documentation/project-summary.md
+argument-hint: "[project folder]"
 ---
 
 # /matlab-readme

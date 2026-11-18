@@ -1,12 +1,7 @@
 ---
 name: matlab-refine
 description: Refine prompts and requirements for MATLAB development tasks
-category: development
-parameters:
-  - name: initial_prompt
-    description: The initial prompt or requirements to refine
-    required: false
-tags: [matlab, prompts, requirements, refinement, specification]
+argument-hint: "[request]"
 ---
 
 # /matlab-refine

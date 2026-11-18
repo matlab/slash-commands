@@ -1,14 +1,7 @@
 ---
 name: matlab-docs
 description: Document MATLAB function with help text
-category: core
-parameters:
-  - name: function_name
-    description: Name of the function to document (optional, will analyze selected code)
-    required: false
-tags: [matlab, documentation, help, function]
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/live-scripts-documentation/document-matlab-function.md
+argument-hint: "[function name]"
 ---
 
 # /matlab-docs

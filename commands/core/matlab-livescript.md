@@ -1,14 +1,7 @@
 ---
 name: matlab-livescript
 description: Create MATLAB Live Script with proper formatting and structure
-category: core
-parameters:
-  - name: topic
-    description: Topic or purpose of the Live Script (optional)
-    required: false
-tags: [matlab, livescript, documentation, tutorial]
-related_skills:
-  - matlab-live-script
+argument-hint: "[topic]"
 ---
 
 # /matlab-livescript

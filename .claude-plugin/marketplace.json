@@ -1,8 +1,9 @@
 {
   "name": "matlab-slash-commands",
+  "description": "MATLAB slash commands for Claude Code from MathWorks",
   "owner": {
     "name": "matlab",
-    "github": "matlab"
+    "url": "https://github.com/matlab"
   },
   "plugins": [
     {

@@ -1,9 +1,7 @@
 ---
 name: matlab-explain
 description: Explain MATLAB code functionality, algorithms, and design decisions
-category: development
-parameters: []
-tags: [matlab, explain, understand, documentation, learning]
+argument-hint: "[file or code]"
 ---
 
 # /matlab-explain

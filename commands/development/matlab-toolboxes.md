@@ -1,9 +1,6 @@
 ---
 name: matlab-toolboxes
 description: Detect installed MATLAB toolboxes and suggest usage
-category: development
-parameters: []
-tags: [matlab, toolboxes, dependencies, mcp, environment]
 ---
 
 # /matlab-toolboxes

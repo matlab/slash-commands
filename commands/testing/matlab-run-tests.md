@@ -1,14 +1,7 @@
 ---
 name: matlab-run-tests
 description: Run MATLAB test suite and report results via MCP
-category: testing
-parameters:
-  - name: test_target
-    description: Test file, folder, or test name to run (optional, discovers tests)
-    required: false
-tags: [matlab, testing, mcp, test-runner, ci]
-related_skills:
-  - matlab-test-generator
+argument-hint: "[test file or folder]"
 ---
 
 # /matlab-run-tests

@@ -54,14 +54,7 @@ cp templates/command-template.md commands/category/matlab-yourcommand.md
 ---
 name: matlab-commandname
 description: Brief description (50 chars max)
-category: [core|testing|quality|development]
-parameters:
-  - name: param1
-    description: Parameter description
-    required: false
-tags: [matlab, relevant, tags]
-related_prompts:
-  - github.com/matlab/prompts/path/to/prompt
+argument-hint: "[what the command takes]"
 ---
 
 # /matlab-commandname

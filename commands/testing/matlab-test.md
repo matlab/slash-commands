@@ -1,16 +1,7 @@
 ---
 name: matlab-test
 description: Generate unit tests for MATLAB functions
-category: testing
-parameters:
-  - name: function_name
-    description: Name of the function to test (optional, will analyze selected code)
-    required: false
-tags: [matlab, testing, unit-test, quality]
-related_skills:
-  - matlab-test-generator
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/create-unit-tests.md
+argument-hint: "[function name]"
 ---
 
 # /matlab-test

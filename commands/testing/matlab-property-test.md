@@ -1,14 +1,7 @@
 ---
 name: matlab-property-test
 description: Create property-based tests for mathematical invariants and properties
-category: testing
-parameters:
-  - name: function_name
-    description: Name of the function to test (optional)
-    required: false
-tags: [matlab, testing, property-based, invariants, verification]
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/property-based-testing.md
+argument-hint: "[function name]"
 ---
 
 # /matlab-property-test

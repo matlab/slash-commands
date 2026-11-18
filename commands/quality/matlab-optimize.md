@@ -1,13 +1,7 @@
 ---
 name: matlab-optimize
 description: Optimize MATLAB code for performance and efficiency
-category: quality
-parameters: []
-tags: [matlab, optimization, performance, vectorization, profiling]
-related_skills:
-  - matlab-performance-optimizer
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/optimize-code-performance.md
+argument-hint: "[file or function]"
 ---
 
 # /matlab-optimize

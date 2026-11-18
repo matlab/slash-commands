@@ -1,16 +1,7 @@
 ---
 name: matlab-check
 description: Run MATLAB Code Analyzer on files or code
-category: core
-parameters:
-  - name: file_or_code
-    description: File path or code to analyze (optional, uses current file)
-    required: false
-tags: [matlab, code-analysis, linting, quality, mcp]
-related_skills:
-  - matlab-performance-optimizer
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/optimize-code-performance.md
+argument-hint: "[file or code]"
 ---
 
 # /matlab-check

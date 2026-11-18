@@ -1,12 +1,7 @@
 ---
 name: matlab-run
 description: Execute MATLAB code or files via MCP
-category: core
-parameters:
-  - name: file_or_expression
-    description: File path to run or MATLAB expression to evaluate
-    required: false
-tags: [matlab, execution, mcp, run, evaluate]
+argument-hint: "[file or expression]"
 ---
 
 # /matlab-run

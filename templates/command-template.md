@@ -1,24 +1,14 @@
 ---
 name: matlab-commandname
 description: Brief description of what this command does (50 chars max)
-category: [core|testing|quality|development]
-parameters:
-  - name: param1
-    description: Description of the first parameter
-    required: false
-  - name: param2
-    description: Description of the second parameter
-    required: true
-tags: [matlab, tag1, tag2, tag3]
-related_prompts:
-  - github.com/matlab/prompts/path/to/related-prompt.md
-related_skills:
-  - skill-name-from-matlab-skills
+argument-hint: "[what the command takes]"
 ---
 
 # /matlab-commandname
 
 One-line description of what this command does.
+
+Input: $ARGUMENTS
 
 ## Task
 

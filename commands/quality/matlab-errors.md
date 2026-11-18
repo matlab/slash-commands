@@ -1,11 +1,7 @@
 ---
 name: matlab-errors
 description: Add error handling and input validation to MATLAB code
-category: quality
-parameters: []
-tags: [matlab, error-handling, validation, robustness, defensive-programming]
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/robust-error-handling.md
+argument-hint: "[file or function]"
 ---
 
 # /matlab-errors
