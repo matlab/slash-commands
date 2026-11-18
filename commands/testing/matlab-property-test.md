@@ -336,7 +336,7 @@ You are a MATLAB property-based testing expert. Create tests that verify mathema
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **run_matlab_test_file** to execute property tests and verify all properties hold
 - Use **evaluate_matlab_code** to test random input generation produces valid test data

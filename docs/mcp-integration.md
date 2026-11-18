@@ -1,10 +1,10 @@
 # MCP Integration Guide
 
-This guide explains how the MATLAB Slash Commands use the MATLAB MCP Core Server for live code execution, testing, and analysis.
+This guide explains how the MATLAB Slash Commands use the MATLAB MCP Server for live code execution, testing, and analysis.
 
 ## What is MCP?
 
-The Model Context Protocol (MCP) is a universal standard for connecting AI agents to external tools. The [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) provides 5 tools that any MCP-compatible AI agent can use:
+The Model Context Protocol (MCP) is a universal standard for connecting AI agents to external tools. The [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) provides 5 tools that any MCP-compatible AI agent can use:
 
 | Tool | Description |
 |------|-------------|
@@ -25,27 +25,27 @@ The server also exposes MCP resources:
 
 ### Prerequisites
 
-- MATLAB R2020b or later installed and on the system PATH
-- Download the latest binary for your platform from the [GitHub releases](https://github.com/matlab/matlab-mcp-core-server/releases)
+- MATLAB R2021a or later installed and on the system PATH
+- Download the latest binary for your platform from the [GitHub releases](https://github.com/matlab/matlab-mcp-server/releases)
 
 ### Configure Your AI Agent
 
 #### Claude Code
 
 ```bash
-claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-core-server-binary
+claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-server-binary
 ```
 
 With startup options:
 ```bash
-claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-core-server-binary --initial-working-folder=/home/username/myproject
+claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-server-binary --initial-working-folder=/home/username/myproject
 ```
 
 Remove with: `claude mcp remove matlab`
 
 #### Claude Desktop
 
-1. Download the `matlab-mcp-core-server.mcpb` bundle from the [latest release](https://github.com/matlab/matlab-mcp-core-server/releases)
+1. Download the `matlab-mcp-server.mcpb` bundle from the [latest release](https://github.com/matlab/matlab-mcp-server/releases)
 2. Double-click the `.mcpb` file, or install via Settings > Extensions > Advanced Settings > Install Extension
 3. Configure arguments via Settings > Extensions > Configure
 
@@ -57,7 +57,7 @@ Add to your workspace `mcp.json`:
   "servers": {
     "matlab": {
       "type": "stdio",
-      "command": "/fullpath/to/matlab-mcp-core-server-binary",
+      "command": "/fullpath/to/matlab-mcp-server-binary",
       "args": []
     }
   }
@@ -73,7 +73,7 @@ Add to `.cursor/mcp.json`:
 {
   "mcpServers": {
     "matlab": {
-      "command": "/fullpath/to/matlab-mcp-core-server-binary",
+      "command": "/fullpath/to/matlab-mcp-server-binary",
       "args": []
     }
   }

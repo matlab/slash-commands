@@ -9,7 +9,7 @@ MATLAB Slash Commands are available in multiple formats for different AI coding 
 | Claude Code | Plugin (markdown + YAML) | `commands/` | All 13 |
 | GitHub Copilot | `.prompt.md` files | `copilot/prompts/` | 6 key commands |
 | Cursor IDE | `.mdc` rules file | `cursor/rules/` | Rules (not commands) |
-| Any MCP agent | MCP server | External | Via MATLAB MCP Core Server |
+| Any MCP agent | MCP server | External | Via MATLAB MCP Server |
 
 ## Claude Code (Full Support)
 
@@ -52,10 +52,10 @@ Copy the Cursor rules file to `.windsurfrules` at your project root.
 Copy the Cursor rules file to `.clinerules` at your project root.
 
 ### Amazon Q Developer
-Create a custom agent JSON referencing the MATLAB MCP Core Server.
+Create a custom agent JSON referencing the MATLAB MCP Server.
 
 ## MCP Support for All Agents
 
-The **MATLAB MCP Core Server** provides live MATLAB capabilities (code execution, testing, analysis) to any MCP-compatible agent. This is the recommended way to add MATLAB integration across all agents.
+The **MATLAB MCP Server** provides live MATLAB capabilities (code execution, testing, analysis) to any MCP-compatible agent. This is the recommended way to add MATLAB integration across all agents.
 
 Setup: See [MCP Integration Guide](mcp-integration.md).

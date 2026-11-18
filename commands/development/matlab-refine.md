@@ -267,7 +267,7 @@ You are a MATLAB requirements analyst. Help refine prompts and requirements into
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **detect_matlab_toolboxes** to inform the specification about which toolboxes and capabilities are available
 - Use **evaluate_matlab_code** to prototype key algorithmic decisions during refinement

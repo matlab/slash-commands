@@ -223,7 +223,7 @@ You are a MATLAB testing expert. Create unit tests that verify function behavior
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **run_matlab_test_file** to execute the generated test file and report actual pass/fail results
 - Use **check_matlab_code** to validate the test file has no Code Analyzer issues

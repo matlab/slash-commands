@@ -9,11 +9,11 @@ Slash commands for MATLAB development workflows across multiple AI coding agents
 | **Claude Code** | Plugin | All 13 | `/plugin install github:matlab/slash-commands` |
 | **GitHub Copilot** | `.prompt.md` | 6 key commands | Copy `copilot/prompts/` to `.github/prompts/` |
 | **Cursor IDE** | `.mdc` rules | Rules (always-on) | Copy `cursor/rules/` to `.cursor/rules/` |
-| **Any MCP agent** | MCP server | Via MATLAB MCP Core Server | See [MCP Guide](docs/mcp-integration.md) |
+| **Any MCP agent** | MCP server | Via MATLAB MCP Server | See [MCP Guide](docs/mcp-integration.md) |
 
 ## MCP Integration
 
-When the [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) is connected, commands gain live capabilities:
+When the [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) is connected, commands gain live capabilities:
 
 | MCP Tool | What It Enables |
 |----------|----------------|
@@ -117,7 +117,7 @@ git clone https://github.com/matlab/slash-commands.git
 ## Documentation
 
 - [Command Reference](docs/command-reference.md): Reference for all 13 commands
-- [MCP Integration Guide](docs/mcp-integration.md): Setup and usage with MATLAB MCP Core Server
+- [MCP Integration Guide](docs/mcp-integration.md): Setup and usage with MATLAB MCP Server
 - [Cross-Agent Support](docs/cross-agent-support.md): Using commands with Copilot, Cursor, etc.
 - [Usage Guide](docs/usage-guide.md): Development patterns and best practices
 - [Installation Guide](docs/installation.md): Setup instructions for all agents
@@ -127,7 +127,7 @@ git clone https://github.com/matlab/slash-commands.git
 
 - An AI coding agent (Claude Code, GitHub Copilot, Cursor, or any MCP-compatible agent)
 - MATLAB development environment (for running generated code)
-- Optional: [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) for live execution
+- Optional: [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) for live execution
 
 ## Contributing
 
@@ -141,6 +141,6 @@ Copyright (c) 2025, The MathWorks, Inc.
 
 ## Related Projects
 
-- [matlab/matlab-mcp-core-server](https://github.com/matlab/matlab-mcp-core-server): MATLAB MCP server for AI agent integration
+- [matlab/matlab-mcp-server](https://github.com/matlab/matlab-mcp-server): MATLAB MCP server for AI agent integration
 - [matlab/prompts](https://github.com/matlab/prompts): MATLAB prompts for AI assistants and copilots
 - [matlab/skills](https://github.com/matlab/skills): Agents Skills for MATLAB

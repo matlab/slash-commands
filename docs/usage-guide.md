@@ -138,7 +138,7 @@ Analyze and refine code:
 
 ### MCP-Powered Workflows
 
-When the MATLAB MCP Core Server is connected, commands gain live capabilities:
+When the MATLAB MCP Server is connected, commands gain live capabilities:
 
 ```matlab
 % Run Code Analyzer, get real diagnostics
@@ -162,7 +162,7 @@ These commands are available in multiple formats:
 - **Claude Code**: Full plugin with all 13 commands
 - **GitHub Copilot**: 6 key commands as `.prompt.md` files
 - **Cursor IDE**: MATLAB rules for always-on context
-- **Any MCP agent**: Live execution via MATLAB MCP Core Server
+- **Any MCP agent**: Live execution via MATLAB MCP Server
 
 See [Cross-Agent Support](cross-agent-support.md) for details.
 

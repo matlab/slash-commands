@@ -55,7 +55,7 @@ You are a MATLAB code quality expert. Analyze MATLAB code using the Code Analyze
 
 ## MCP Integration
 
-This command requires the MATLAB MCP Core Server for full functionality.
+This command requires the MATLAB MCP Server for full functionality.
 
 ### With MCP Available
 - Use **check_matlab_code** to run the Code Analyzer and get actual diagnostics

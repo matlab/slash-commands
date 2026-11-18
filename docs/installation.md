@@ -99,9 +99,9 @@ Provides always-on MATLAB context for `.m`, `.mlx`, and `.mlapp` files.
 
 ### MCP Server Setup (Optional, All Agents)
 
-The MATLAB MCP Core Server enables live code execution across any agent:
+The MATLAB MCP Server enables live code execution across any agent:
 
-1. Install from [github.com/matlab/matlab-mcp-core-server](https://github.com/matlab/matlab-mcp-core-server)
+1. Install from [github.com/matlab/matlab-mcp-server](https://github.com/matlab/matlab-mcp-server)
 2. Configure your agent (see [MCP Integration Guide](mcp-integration.md))
 3. Verify with `/matlab-toolboxes` (Claude Code) or check toolbox listing
 
@@ -174,7 +174,7 @@ python -m json.tool .claude-plugin/plugin.json
 
 1. Verify MATLAB is installed and on the PATH
 2. Check the MCP server logs for errors
-3. Ensure the MATLAB MCP Core Server is running
+3. Ensure the MATLAB MCP Server is running
 4. See [MCP Integration Guide](mcp-integration.md) for detailed troubleshooting
 
 ### Version Conflicts

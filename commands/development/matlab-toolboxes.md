@@ -54,7 +54,7 @@ You are a MATLAB environment expert. Detect which toolboxes are available and ad
 
 ## MCP Integration
 
-This command benefits significantly from the MATLAB MCP Core Server.
+This command benefits significantly from the MATLAB MCP Server.
 
 ### With MCP Available
 - Use **detect_matlab_toolboxes** to get the actual installed toolbox list

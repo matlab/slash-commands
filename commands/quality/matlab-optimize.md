@@ -225,7 +225,7 @@ You are a MATLAB performance optimization expert. Analyze and optimize code to i
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **evaluate_matlab_code** to benchmark the original code with `tic`/`toc` and report actual execution time
 - Use **evaluate_matlab_code** to benchmark the optimized code and report the actual speedup

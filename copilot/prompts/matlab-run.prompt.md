@@ -17,4 +17,4 @@ When asked to run MATLAB code:
    - Use `disp()` or `fprintf()` for intermediate values
    - Check `whos` for variable state
 
-If the MATLAB MCP Core Server is available, use it to execute code directly. Otherwise, provide the code ready to run in MATLAB.
+If the MATLAB MCP Server is available, use it to execute code directly. Otherwise, provide the code ready to run in MATLAB.

@@ -111,7 +111,7 @@ You are a MATLAB documentation specialist. Create documentation for MATLAB funct
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **evaluate_matlab_code** to verify that example code in the generated documentation runs correctly
 - Use **check_matlab_code** to validate the documented function has no Code Analyzer issues

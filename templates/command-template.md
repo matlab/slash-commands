@@ -121,7 +121,7 @@ output = functionName(emptyInput);  % Should handle gracefully
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available, enhance this command:
+When the MATLAB MCP Server is available, enhance this command:
 
 ### With MCP Available
 - Use **check_matlab_code** to [describe how this command uses code analysis]
@@ -133,7 +133,7 @@ When the MATLAB MCP Core Server is available, enhance this command:
 (Remove any MCP tools not relevant to this command)
 
 ### Without MCP
-If the MATLAB MCP Core Server is not connected:
+If the MATLAB MCP Server is not connected:
 - [Describe graceful fallback behavior]
 - [Suggest manual verification steps]
 

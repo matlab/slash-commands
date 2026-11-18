@@ -13,7 +13,7 @@ related_skills:
 
 # /matlab-run-tests
 
-Run MATLAB tests via the MCP Core Server and present a formatted results report.
+Run MATLAB tests via the MATLAB MCP Server and present a formatted results report.
 
 ## Task
 
@@ -55,7 +55,7 @@ You are a MATLAB testing expert. Execute tests via MCP, analyze results, and pro
 
 ## MCP Integration
 
-This command requires the MATLAB MCP Core Server for full functionality.
+This command requires the MATLAB MCP Server for full functionality.
 
 ### With MCP Available
 - Use **run_matlab_test_file** to execute the test suite
@@ -66,7 +66,7 @@ This command requires the MATLAB MCP Core Server for full functionality.
 If MCP is not available:
 - Analyze test files statically for common issues
 - Provide the command to run tests manually: `results = runtests('TestFile'); disp(results)`
-- Recommend setting up the MATLAB MCP Core Server for automated test execution
+- Recommend setting up the MATLAB MCP Server for automated test execution
 
 ## Output
 

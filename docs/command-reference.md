@@ -245,7 +245,7 @@ Transform vague requirements into detailed specifications.
 
 ## MCP-Powered Commands
 
-These commands are designed primarily for use with the MATLAB MCP Core Server. They provide static fallback when MCP is not available.
+These commands are designed primarily for use with the MATLAB MCP Server. They provide static fallback when MCP is not available.
 
 ---
 
@@ -455,9 +455,9 @@ Generated code is:
 - Diff-friendly (logical organization)
 - Merge-friendly (minimal conflicts)
 
-### MATLAB MCP Core Server
+### MATLAB MCP Server
 
-Commands can use the MCP Core Server for:
+Commands can use the MATLAB MCP Server for:
 - Live code execution and validation
 - Real Code Analyzer diagnostics
 - Automated test execution

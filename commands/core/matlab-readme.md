@@ -59,7 +59,7 @@ You are a MATLAB documentation expert. Analyze the current directory and generat
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available, enhance this command:
+When the MATLAB MCP Server is available, enhance this command:
 
 - Use **detect_matlab_toolboxes** to auto-populate the Requirements section with actually installed toolboxes
 - Use **check_matlab_code** on any example code snippets to ensure they are valid

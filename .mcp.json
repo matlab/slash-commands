@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "matlab": {
-      "command": "C:\\mcp\\matlab-mcp-core-server-win64.exe"
+      "command": "C:\\mcp\\matlab-mcp-server-windows-x64.exe"
     }
   }
 }

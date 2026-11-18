@@ -138,7 +138,7 @@ You are a MATLAB Live Script expert. Create Live Scripts that combine code, form
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **run_matlab_file** to execute the generated Live Script and verify all code sections produce output
 - Use **check_matlab_code** to validate the script has no Code Analyzer warnings

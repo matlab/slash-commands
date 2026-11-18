@@ -234,7 +234,7 @@ You are a MATLAB expert educator. Analyze and explain MATLAB code in a manner th
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
 - Use **evaluate_matlab_code** to run code sections and include actual output alongside explanations
 - Use **check_matlab_code** to identify any Code Analyzer issues worth mentioning in the explanation

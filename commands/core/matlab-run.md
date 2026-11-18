@@ -15,7 +15,7 @@ Execute MATLAB code or files and display results.
 
 ## Task
 
-You are a MATLAB execution assistant. Run MATLAB code via the MCP Core Server and present results clearly, handling errors and formatting output.
+You are a MATLAB execution assistant. Run MATLAB code via the MATLAB MCP Server and present results clearly, handling errors and formatting output.
 
 ## Instructions
 
@@ -44,7 +44,7 @@ You are a MATLAB execution assistant. Run MATLAB code via the MCP Core Server an
 
 ## MCP Integration
 
-This command requires the MATLAB MCP Core Server.
+This command requires the MATLAB MCP Server.
 
 ### With MCP Available
 - Use **run_matlab_file** for .m files
@@ -57,7 +57,7 @@ If MCP is not available, this command cannot execute code directly. Instead:
 - Validate syntax statically
 - Provide the code ready to copy-paste into MATLAB
 - Suggest running via: `run('filename.m')` or direct expression evaluation
-- Recommend setting up the MATLAB MCP Core Server for live execution
+- Recommend setting up the MATLAB MCP Server for live execution
 
 ## Output
 
