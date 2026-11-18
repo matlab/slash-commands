@@ -6,7 +6,7 @@ Slash commands for MATLAB development workflows across multiple AI coding agents
 
 | Agent | Format | Commands | Install |
 |-------|--------|----------|---------|
-| **Claude Code** | Plugin | All 13 | `/plugin install github:matlab/slash-commands` |
+| **Claude Code** | Plugin | All 13 | `/plugin marketplace add matlab/slash-commands`, then `/plugin install matlab-slash-commands@matlab-slash-commands` |
 | **GitHub Copilot** | `.prompt.md` | 6 key commands | Copy `copilot/prompts/` to `.github/prompts/` |
 | **Cursor IDE** | `.mdc` rules | Rules (always-on) | Copy `cursor/rules/` to `.cursor/rules/` |
 | **Any MCP agent** | MCP server | Via MATLAB MCP Server | See [MCP Guide](docs/mcp-integration.md) |
@@ -30,7 +30,8 @@ All commands work without MCP. They generate code and instructions as before. MC
 ### Claude Code (Full Support)
 
 ```bash
-/plugin install github:matlab/slash-commands
+/plugin marketplace add matlab/slash-commands
+/plugin install matlab-slash-commands@matlab-slash-commands
 ```
 
 ### GitHub Copilot

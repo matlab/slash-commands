@@ -15,7 +15,8 @@ MATLAB Slash Commands are available in multiple formats for different AI coding 
 
 Install via plugin system:
 ```bash
-/plugin install github:matlab/slash-commands
+/plugin marketplace add matlab/slash-commands
+/plugin install matlab-slash-commands@matlab-slash-commands
 ```
 
 All 13 commands available as `/matlab-*` slash commands.
