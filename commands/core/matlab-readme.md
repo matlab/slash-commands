@@ -6,74 +6,59 @@ argument-hint: "[project folder]"
 
 # /matlab-readme
 
-Generate a README.md file for the current MATLAB project by analyzing the codebase structure and content.
+Generate a README.md for a MATLAB project by analyzing its structure and code.
+
+Input: $ARGUMENTS
 
 ## Task
 
-You are a MATLAB documentation expert. Analyze the current directory and generate a README.md file that follows best practices for MATLAB projects.
+You are a MATLAB documentation expert. Analyze the project folder and write a README.md that states what the project does, what it requires, and how to install, use, and test it, using only facts found in the code.
 
 ## Instructions
 
-1. **Analyze the project structure**:
-   - Scan the current directory for MATLAB files (.m, .mlx, .mat, .fig, .mlapp)
-   - Identify the main entry points and key functions
-   - Look for existing documentation, examples, or tests
-   - Check for dependencies and required toolboxes
+1. **Read the input**: a project folder path. If it is empty, use the current folder. If the folder contains no MATLAB files, say so and ask for the right folder.
 
-2. **Generate README content** with these sections:
-   - **Project Title and Description**: Clear, concise overview
-   - **Features**: Key capabilities and functionality
-   - **Requirements**: MATLAB version, required toolboxes, dependencies
-   - **Installation**: How to set up the project
-   - **Usage**: Basic examples with code snippets
-   - **Project Structure**: Directory organization and key files
-   - **API Documentation**: Brief description of main functions/classes
-   - **Examples**: Links to example scripts or Live Scripts
-   - **Testing**: How to run tests if available
-   - **Contributing**: Guidelines for contributions
-   - **License**: License information if LICENSE file exists
-   - **Contact/Authors**: Author information and contact details
+2. **Analyze the project**:
+   - Find MATLAB files: `.m` (functions, classes, scripts, and plain-text Live Scripts), `.mlx`, `.mlapp`, `.slx`, `.mat`.
+   - Find packaging and project files: a MATLAB project (`.prj` with a `resources/project` folder), a toolbox packaging file, an `.mltbx`, a `buildfile.m`, and test folders.
+   - Identify entry points (scripts, apps, top-level functions) and read their H1 help lines for descriptions.
+   - Find the products the code requires with `matlab.codetools.requiredFilesAndProducts`, and the oldest release the code supports from the newest features it uses (for example, `arguments` blocks need R2019b, `Name=Value` call syntax needs R2021a, `dictionary` needs R2022b).
+   - Read any existing README.md and LICENSE.
 
-3. **Follow MATLAB README best practices**:
-   - Use MATLAB syntax highlighting in code blocks
-   - Include function signatures with input/output descriptions
-   - Provide clear examples that can be copy-pasted
-   - Reference MATLAB documentation where relevant
-   - Include badges if applicable (File Exchange, CI status)
+3. **Write these sections** (skip a section only when the project has nothing for it):
+   - **Title and description**: what the project does, in one or two sentences
+   - **Requirements**: MATLAB release and each required product by full name
+   - **Installation**: the method that matches the project: install the `.mltbx` (double-click, or `matlab.addons.install("name.mltbx")`), open the MATLAB project (`openProject("name.prj")`), or add the folder to the path (`addpath("src")`)
+   - **Usage**: short examples that call the real functions with realistic inputs
+   - **Project structure**: the main folders and files
+   - **Functions**: the main public functions with their syntax and H1 description
+   - **Testing**: `buildtool test` if `buildfile.m` defines a test task, otherwise `runtests("tests")`
+   - **License**: from the LICENSE file
+   - **Contributing** and **Authors**: only when the repository provides that information
 
-4. **Code snippets format**:
+4. **Write the code examples to run as written**:
    ```matlab
-   % Example code here
-   result = functionName(input1, input2);
+   data = readtable("data/sensors.csv");
+   result = smoothSignal(data.Value, 9, Method="median");
+   plot(data.Time, result)
    ```
+   - Use the project's real function names and data files.
+   - Use current functions: `readtable`/`readmatrix` (not `xlsread`/`csvread`), `datetime` (not `datenum`), `exportgraphics` for saving figures.
+   - Badges are optional: a CI status badge if the repository has CI, and an Open in MATLAB Online badge for a public GitHub repository.
 
-5. **Adapt content** based on project type:
-   - Toolbox: Focus on function reference and examples
-   - Application: Emphasize usage and configuration
-   - Research code: Include citation information and paper references
-   - Educational: Add learning objectives and exercises
+5. **Adapt to the project type**: a toolbox leads with function reference and examples; an app leads with how to start it (`appName` or `run` on the app file); research code adds citation information from the repository.
+
+6. **If a README.md exists**, keep its custom sections and update only what the code contradicts or what is missing.
 
 ## MCP Integration
 
-When the MATLAB MCP Server is available, enhance this command:
+When the MATLAB MCP Server is available:
 
-- Use **detect_matlab_toolboxes** to auto-populate the Requirements section with actually installed toolboxes
-- Use **check_matlab_code** on any example code snippets to ensure they are valid
-- Use **run_matlab_file** on the project's main entry point to verify the usage examples work
+- Use **evaluate_matlab_code** with `code` and `project_path` set to the project folder to run `matlab.codetools.requiredFilesAndProducts` on the project's files, and fill the Requirements section from its result. Use **detect_matlab_toolboxes** only to note whether those products are installed here; installed products are not requirements.
+- Write each usage example to a temporary `.m` file and run it with **run_matlab_file** (`script_path`) to confirm it works. Run **check_matlab_code** on the same file.
 
-If MCP is not available, note in the output that the user should verify toolbox requirements manually.
+Without MCP, infer requirements from the function calls, mark them as unverified in your reply, and tell the user to run the examples before publishing.
 
 ## Output
 
-Generate a complete README.md file that:
-- Is well-structured with clear sections
-- Contains accurate information extracted from the codebase
-- Includes practical examples
-- Follows Markdown best practices
-- Is ready to be saved in the project root
-
-Remember to:
-- Check if README.md already exists and preserve any custom sections
-- Extract actual function names and descriptions from the code
-- Include actual code examples found in the project
-- Note any missing recommended sections for the user to fill in later
+A complete README.md, ready to save in the project root, plus a short list of what you could not determine from the code (for example, no LICENSE file or no tests found).
