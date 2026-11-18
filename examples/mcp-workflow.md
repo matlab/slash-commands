@@ -1,6 +1,6 @@
 # MCP-Powered Development Workflow
 
-This example demonstrates a full MATLAB development workflow using slash commands with the MATLAB MCP Core Server connected.
+This example demonstrates a full MATLAB development workflow using slash commands with the MATLAB MCP Server connected.
 
 ## Scenario
 

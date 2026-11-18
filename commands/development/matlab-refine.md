@@ -1,288 +1,253 @@
 ---
 name: matlab-refine
 description: Refine prompts and requirements for MATLAB development tasks
-category: development
-parameters:
-  - name: initial_prompt
-    description: The initial prompt or requirements to refine
-    required: false
-tags: [matlab, prompts, requirements, refinement, specification]
+argument-hint: "[request]"
 ---
 
 # /matlab-refine
 
 Transform prompts into MATLAB development specifications.
 
+Input: $ARGUMENTS
+
 ## Task
 
-You are a MATLAB requirements analyst. Help refine prompts and requirements into specifications for MATLAB development, ensuring all edge cases and constraints are considered.
+You are a MATLAB requirements analyst. Turn a rough request into a specification for MATLAB development that states inputs, outputs, validation, errors, performance targets, release, and toolbox requirements, so the code can be written and tested without guessing.
 
 ## Instructions
 
-1. **Analyze the initial prompt** for:
+1. **Read the input**. It is the request to refine, such as "create a function to process sensor data". If it is empty, ask the user what they want to build.
+
+2. **Analyze the request** for:
    - Ambiguities and unclear requirements
    - Missing specifications
    - Implicit assumptions
-   - Potential edge cases
+   - Edge cases
    - Performance requirements
-   - MATLAB-specific considerations
+   - MATLAB-specific considerations: release, toolboxes, data types, and data containers
 
-2. **Ask clarifying questions**:
-   ```markdown
+3. **Ask clarifying questions** when the answers change the design:
+   ````markdown
    ## Clarification Needed
 
-   Before refining your requirements, I need to understand:
+   ### Data
+   - What type and size is the input data, and does it come from a file, a device, or the workspace?
+   - Does the data have named channels or timestamps (a table or timetable fits better than a raw matrix)?
+   - What should happen with missing, NaN, or out-of-range values?
 
-   ### Data Specifications
-   - What is the expected input data type and size?
-   - Are there any constraints on input values?
-   - What should happen with invalid/missing data?
-   - Is real-time processing required?
+   ### Function
+   - What is the primary goal, and how will you know the result is correct?
+   - Which MATLAB release and toolboxes are available?
 
-   ### Functional Requirements
-   - What is the primary goal of this code?
-   - What are the success criteria?
-   - Are there any performance benchmarks?
-   - Which MATLAB version/toolboxes are available?
-
-   ### Output Requirements
-   - What format should the output take?
-   - How should results be validated?
-   - Are visualizations required?
-   - Should results be saved to files?
+   ### Output
+   - What format should the output take, and should it be saved to a file?
+   - Are plots required?
 
    ### Constraints
-   - Memory limitations?
-   - Execution time requirements?
-   - Platform compatibility needs?
-   - Integration with existing code?
-   ```
+   - Data size, memory, and run-time limits?
+   - Existing code this must integrate with?
+   ````
 
-3. **Transform into detailed specification**:
+4. **Transform into a detailed specification**:
 
    ### Original Prompt
    > "Create a function to process sensor data"
 
    ### Refined Specification
-   ```markdown
+   ````markdown
    ## MATLAB Function Specification: processSensorData
 
    ### Purpose
-   Process multi-channel sensor data to detect anomalies and extract features
+   Detect anomalies and extract features from multi-channel sensor data
    for downstream analysis.
 
    ### Function Signature
    ```matlab
    function [features, anomalies, metrics] = processSensorData(data, options)
+       arguments
+           data (:,:) double {mustBeNonempty}
+           options.SampleRate (1,1) double {mustBePositive} = 1000
+           options.Method (1,1) string {mustBeMember(options.Method, ["fft","wavelet","statistical"])} = "fft"
+           options.ThresholdFactor (1,1) double {mustBePositive} = 3
+           options.WindowSize (1,1) {mustBeInteger, mustBePositive} = 1000
+           options.Overlap (1,1) double {mustBeNonnegative, mustBeLessThan(options.Overlap, 1)} = 0.5
+           options.Verbose (1,1) logical = false
+       end
    ```
 
    ### Input Specifications
    **data** (required):
-   - Type: double array
-   - Size: [nSamples × nChannels] where:
-     - nSamples: 1000 to 1,000,000
+   - Type: double matrix, size nSamples-by-nChannels
+     - nSamples: 1,000 to 1,000,000
      - nChannels: 1 to 64
    - Valid range: -10,000 to +10,000
-   - NaN/Inf handling: Remove or interpolate (based on options)
+   - NaN handling: fill with `fillmissing` before filtering
 
-   **options** (optional, name-value pairs):
-   - 'SampleRate': double, default 1000 Hz
-   - 'Method': {'fft', 'wavelet', 'statistical'}, default 'fft'
-   - 'ThresholdFactor': double, default 3.0 (for anomaly detection)
-   - 'WindowSize': integer, default 1000 samples
-   - 'Overlap': double (0-1), default 0.5
-   - 'Verbose': logical, default false
+   **Name-value arguments** (optional, defined in the `arguments` block above):
+   - `SampleRate`: Hz, default 1000
+   - `Method`: "fft", "wavelet", or "statistical", default "fft"
+   - `ThresholdFactor`: z-score threshold for anomalies, default 3
+   - `WindowSize`: samples per analysis window, default 1000
+   - `Overlap`: fraction of window overlap in [0, 1), default 0.5
+   - `Verbose`: print progress, default false
 
    ### Output Specifications
-   **features**:
-   - Type: struct array
-   - Fields:
-     - mean: [1 × nChannels]
-     - std: [1 × nChannels]
-     - peak_frequency: [1 × nChannels]
-     - power_spectrum: [nFreqs × nChannels]
-     - timestamps: [1 × nWindows]
+   **features** (struct):
+   - mean, std: 1-by-nChannels
+   - peakFrequency: 1-by-nChannels, in Hz
+   - powerSpectrum: nFreqs-by-nChannels
+   - windowTimes: nWindows-by-1 `duration`
 
-   **anomalies**:
-   - Type: struct
-   - Fields:
-     - indices: [nAnomalies × 1] sample indices
-     - channels: [nAnomalies × 1] channel numbers
-     - severity: [nAnomalies × 1] anomaly scores
-     - type: [nAnomalies × 1] categorical {'spike', 'drift', 'noise'}
+   **anomalies** (table, one row per anomaly):
+   - SampleIndex: double
+   - Channel: double
+   - Severity: double (anomaly score)
+   - Type: categorical, one of "spike", "drift", "noise"
 
-   **metrics**:
-   - Type: struct
-   - Fields:
-     - processing_time: double (seconds)
-     - data_quality: double (0-1)
-     - anomaly_rate: double (0-1)
+   **metrics** (struct):
+   - processingTime: seconds
+   - dataQuality: fraction of valid samples, 0 to 1
+   - anomalyRate: anomalies per sample, 0 to 1
 
    ### Processing Requirements
    1. **Preprocessing**:
-      - Remove DC offset
-      - Apply bandpass filter (0.1-500 Hz)
-      - Normalize if range exceeds ±1000
+      - Remove the DC offset from each channel
+      - Bandpass filter from 0.1 Hz to 0.4 times SampleRate (below the Nyquist frequency) with a 4th-order IIR filter from `designfilt`, applied with `filtfilt`. `bandpass` with default settings gives unusable output for a 0.1 Hz edge on records this short.
+      - Normalize channels whose range exceeds 1,000
 
-   2. **Feature Extraction**:
-      - Compute time-domain statistics
-      - Perform frequency analysis (FFT/Wavelet)
-      - Extract peak frequencies and power
+   2. **Feature extraction**:
+      - Time-domain statistics per channel
+      - Frequency analysis by the selected Method
+      - Peak frequency and power per channel
 
-   3. **Anomaly Detection**:
-      - Statistical outlier detection (z-score > threshold)
-      - Trend detection for drift
-      - Spike detection using derivatives
+   3. **Anomaly detection**:
+      - Statistical outliers: z-score above ThresholdFactor
+      - Drift: trend of the unfiltered data over each window (the 0.1 Hz filter removes slower drift)
+      - Spikes: first difference above threshold
 
-   4. **Performance Constraints**:
-      - Process 1 million samples in < 10 seconds
-      - Memory usage < 2 GB
-      - Support parallel processing for multi-channel data
+   4. **Performance targets** (measured with `timeit`):
+      - 1,000,000 samples by 64 channels in under 10 seconds
+      - Peak memory under 2 GB
+      - Operate on whole matrices: `filtfilt`, `mean`, and `fft` work column by column, so no loop over channels is needed
 
    ### Error Handling
-   - Empty input: Error with ID 'processSensorData:EmptyInput'
-   - Invalid sample rate: Error with ID 'processSensorData:InvalidSampleRate'
-   - Insufficient data: Warning and process available data
-   - Memory overflow: Process in chunks automatically
+   - Empty input: rejected by `mustBeNonempty` in the arguments block
+   - Fewer samples than WindowSize: error `processSensorData:InsufficientData`
+   - Data larger than available memory: process in chunks of whole windows
 
    ### Validation Requirements
-   - Unit tests with 95% code coverage
-   - Validate against known test signals
-   - Performance benchmarks documented
-   - Edge case handling verified
+   - Class-based unit tests (`matlab.unittest`) covering each output field
+   - Known test signals: a pure sine (known peak frequency) and injected spikes (known anomaly indices)
+   - 95% statement coverage
+   - Edge cases: one channel, all-NaN channel, minimum sample count
 
    ### Example Usage
    ```matlab
-   % Load sensor data
-   data = load('sensor_data.mat');
+   s = load("sensor_data.mat");
+   [features, anomalies, metrics] = processSensorData(s.signals);
 
-   % Process with default settings
-   [features, anomalies, metrics] = processSensorData(data.signals);
+   [features, anomalies] = processSensorData(s.signals, ...
+       Method="wavelet", SampleRate=2000, ThresholdFactor=2.5);
 
-   % Process with custom settings
-   [features, anomalies, metrics] = processSensorData(data.signals, ...
-       'Method', 'wavelet', ...
-       'SampleRate', 2000, ...
-       'ThresholdFactor', 2.5, ...
-       'Verbose', true);
-
-   % Visualize results
-   figure;
-   subplot(2,1,1);
-   plot(features.timestamps, features.mean);
-   title('Channel Means Over Time');
-
-   subplot(2,1,2);
-   scatter(anomalies.indices, anomalies.severity);
-   title('Detected Anomalies');
+   tiledlayout(2,1)
+   nexttile
+   plot(features.mean)
+   title("Channel Means")
+   nexttile
+   scatter(anomalies.SampleIndex, anomalies.Severity)
+   title("Detected Anomalies")
    ```
 
    ### Dependencies
-   - MATLAB R2019b or later
-   - Signal Processing Toolbox (for filtering)
-   - Statistics and Machine Learning Toolbox (optional, for advanced detection)
-   - Parallel Computing Toolbox (optional, for speedup)
-   ```
+   - MATLAB R2021a or later (`Name=Value` call syntax)
+   - Signal Processing Toolbox: `designfilt`, `filtfilt`
+   - Wavelet Toolbox: only for Method="wavelet"
+   ````
 
-4. **Create implementation checklist**:
+5. **Create an implementation checklist**:
    ```markdown
    ## Implementation Checklist
 
    ### Core Functionality
-   - [ ] Input validation and parsing
-   - [ ] Data preprocessing pipeline
-   - [ ] Feature extraction algorithms
-   - [ ] Anomaly detection methods
-   - [ ] Output structure creation
+   - [ ] arguments block with validators
+   - [ ] Preprocessing
+   - [ ] Feature extraction
+   - [ ] Anomaly detection
+   - [ ] Output struct and table
 
    ### Robustness
-   - [ ] Handle empty/missing data
-   - [ ] Validate numeric ranges
-   - [ ] Memory-efficient processing
-   - [ ] Error recovery strategies
-   - [ ] Progress reporting for long operations
+   - [ ] Missing and invalid data
+   - [ ] Chunked processing for large inputs
+   - [ ] Error identifiers for each failure
 
    ### Testing
    - [ ] Unit tests for each component
-   - [ ] Integration tests for full pipeline
-   - [ ] Performance benchmarks
-   - [ ] Edge case validation
-   - [ ] Documentation examples
+   - [ ] Known-signal tests for the full pipeline
+   - [ ] Performance baseline with timeit
 
    ### Documentation
-   - [ ] Function help text
-   - [ ] Inline code comments
-   - [ ] Usage examples
-   - [ ] Performance notes
-   - [ ] Troubleshooting guide
+   - [ ] Help text with H1 line and syntax paragraphs
+   - [ ] Usage example
    ```
 
-5. **Identify design decisions**:
+6. **Identify design decisions**:
    ```markdown
    ## Design Decisions Required
 
-   ### Algorithm Choices
-   **Question**: Which anomaly detection method is most appropriate?
-   - Option A: Statistical (z-score, IQR) - Simple, fast, assumes normality
-   - Option B: Machine Learning - Adaptive, requires training data
-   - Option C: Signal-based (derivatives, wavelets) - Domain-specific
-   **Recommendation**: Use hybrid approach with configurable methods
+   ### Anomaly Detection Method
+   - Option A: Statistical (z-score, IQR): simple and fast, assumes a stationary signal
+   - Option B: Machine learning: adapts to the data, needs labeled training data
+   - Option C: Signal-based (derivatives, wavelets): matches known fault shapes
+   **Recommendation**: statistical by default, others selectable through Method
 
-   ### Data Structure
-   **Question**: How should multi-channel data be organized?
-   - Option A: Cell array {channel1, channel2, ...}
-   - Option B: Matrix [samples × channels]
-   - Option C: Struct with metadata
-   **Recommendation**: Matrix for performance, struct for output
+   ### Data Container
+   - Option A: Matrix (samples by channels): fastest for numeric processing
+   - Option B: timetable: carries timestamps and channel names
+   **Recommendation**: accept a matrix; return anomalies as a table
 
-   ### Performance Trade-offs
-   **Question**: Memory vs Speed optimization?
-   - Option A: Load all data (fast, memory intensive)
-   - Option B: Stream processing (slower, memory efficient)
-   - Option C: Adaptive based on data size
-   **Recommendation**: Adaptive with user override option
+   ### Memory and Speed
+   - Option A: Load all data: fastest, limited by memory
+   - Option B: Process in chunks: bounded memory, more code
+   **Recommendation**: whole-matrix processing, chunking above a size threshold
    ```
 
-6. **Suggest best practices**:
+7. **Recommend MATLAB practices for the task**:
    ```markdown
-   ## MATLAB Best Practices for This Task
+   ## MATLAB Practices for This Task
 
    ### Code Organization
-   - Main function with clear sections
-   - Separate validation, processing, and output functions
-   - Use local functions for modularity
+   - One public function per file, with local functions for each stage
+   - arguments block for all input validation
+   - Error identifiers in the form `processSensorData:ErrorName`
 
    ### Performance
-   - Preallocate arrays
-   - Vectorize operations
-   - Use built-in functions when available
-   - Consider parfor for channel independence
+   - Preallocate arrays that are filled in loops
+   - Operate on whole arrays; most built-in functions work column by column
+   - Measure with `timeit` and profile before optimizing; parallelize only stages the profile shows are slow
 
    ### Maintainability
-   - Use meaningful variable names
-   - Include algorithm references
-   - Version control friendly structure
-   - Comprehensive error messages
+   - lowerCamelCase names that describe the quantity (`sampleRate`, not `sr`)
+   - Named constants instead of magic numbers
+   - Algorithm references in the help text
    ```
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
-- Use **detect_matlab_toolboxes** to inform the specification about which toolboxes and capabilities are available
-- Use **evaluate_matlab_code** to prototype key algorithmic decisions during refinement
-- Include toolbox availability in the generated specification's Dependencies section
+- Use **detect_matlab_toolboxes** to confirm the release and which toolboxes are installed, and write them into the specification's Dependencies section.
+- Use **evaluate_matlab_code** with `code` and `project_path` to prototype key decisions, such as checking that a candidate function exists in the installed release.
 
-If MCP is not available, generate specifications as normal and note that toolbox availability should be verified.
+Without MCP, write the specification and mark the release and toolbox requirements as unverified.
 
 ## Output
 
 Generate:
-1. **Refined requirements document** with specifications
-2. **Clarifying questions** for ambiguous points
-3. **Implementation checklist** with prioritized tasks
-4. **Design decisions** that need to be made
-5. **Risk assessment** of potential issues
+1. **Refined requirements** as a specification
+2. **Clarifying questions** for open points
+3. **Implementation checklist**
+4. **Design decisions** with a recommendation for each
+5. **Risks** that could invalidate the design
 6. **Success criteria** for validation
-7. **Example code structure** to get started
-8. **Test scenarios** to verify implementation
+7. **Function signature and arguments block** to start from
+8. **Test scenarios** with known expected results

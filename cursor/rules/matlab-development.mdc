@@ -7,42 +7,58 @@ alwaysApply: false
 # MATLAB Development Rules
 
 ## Code Style
-- Use camelCase for variables and functions, PascalCase for classes
-- Functions should have H1 line documentation
-- Use `arguments` blocks for input validation (R2019b+)
-- End statements with semicolons to suppress output (except when debugging)
-- One function per file (except local/nested functions)
+- lowerCamelCase for functions and variables, PascalCase for classes; name functions with a verb (`computeArea`)
+- Descriptive names (`sampleRate`, not `sr`); named constants instead of magic numbers
+- File name matches the primary function or class; terminate every function with `end`
+- At most 6 positional inputs and 4 outputs per function
+- Use `arguments` blocks for input validation (R2019b+), with `options.Name` for name-value arguments instead of `varargin`
+- Keep functions under about 50 lines and nesting at 3 levels or fewer; move inner blocks into local functions
+- End statements with semicolons to suppress output
+- Do not name variables after built-in functions (`sum = 0` shadows `sum`)
+- Build paths with `fullfile`, not hardcoded backslashes
+
+## Modern APIs
+- `readtable`, `readmatrix`, `writetable`, `writematrix` instead of `xlsread`, `csvread`, `dlmread`, `xlswrite`, `csvwrite`
+- `datetime` instead of `datenum`, `datestr`, `now`
+- String arrays (`"text"`) for text, `startsWith`/`matches`/`contains` instead of `strmatch`
+- `dictionary` (R2022b+) instead of `containers.Map`
+- Implicit expansion (`A - mean(A)`) instead of `bsxfun`
+- `table`/`timetable` for data with named columns or timestamps
+- `uifigure` components (`uibutton`, `uidropdown`) instead of `uicontrol`; App Designer instead of GUIDE (removed in R2025a)
+- `exportgraphics` to save figures; `tiledlayout`/`nexttile` is preferred for multi-panel figures (`subplot` remains supported)
+- `clearvars` instead of `clear all`
+
+## Avoid
+- `eval`, `evalc`, `evalin`, `assignin`: use dynamic field names `s.(name)`, function handles, or cell arrays
+- `str2num` on external input without `Evaluation="restricted"` (R2022a+)
+- Growing arrays inside loops: preallocate with `zeros(n, 1)` or similar
 
 ## Performance
-- Vectorize operations instead of using loops where possible
-- Preallocate arrays before loops: `result = zeros(n, 1);`
-- Use built-in functions (`mean`, `sum`, `max`) instead of manual loops
-- Use logical indexing: `data(data > threshold)` instead of `find` + index
-- MATLAB is column-major — iterate over columns, not rows
-- Use `sparse()` for matrices with >70% zeros
+- Vectorize element-wise loops; use logical indexing (`data(data > threshold)`) instead of `find` followed by indexing
+- Most built-in functions (`sum`, `mean`, `filter`, `fft`) work column by column on matrices; do not loop over columns to call them
+- Measure with `timeit` and profile before optimizing; do not add parallel code without a measurement
+- Use `sparse` for large matrices that are mostly zeros
 
 ## Testing
-- Use MATLAB Unit Testing Framework: `classdef TestX < matlab.unittest.TestCase`
-- Name test files with `Test` prefix or suffix
-- Use verification methods: `verifyEqual`, `verifyError`, `verifySize`
-- Use tolerances for floating-point: `verifyEqual(tc, a, b, 'AbsTol', 1e-10)`
-- Include parameterized tests for multiple input combinations
-- Test edge cases: empty, scalar, NaN, Inf, large arrays
+- Class-based tests: `classdef computeAreaTest < matlab.unittest.TestCase`
+- Arrange-act-assert, with no `if`, `for`, or `try` in test methods
+- Verification methods: `verifyEqual`, `verifyError`, `verifySize`, `verifyWarning`
+- Tolerances for floating point: `testCase.verifyEqual(actual, expected, AbsTol=1e-10)`
+- Parameterized tests when only the data varies between cases
+- Edge cases: empty, scalar, NaN, Inf, large arrays
 
 ## Error Handling
-- Use `arguments` blocks for type/size validation
-- Use structured error IDs: `'functionName:ErrorType'`
-- Clean up resources with `onCleanup`
-- Use `try`/`catch ME` with `ME.identifier` for specific handling
-- Validate numeric ranges, dimensions, and types
+- Error identifiers in the form `"functionName:errorName"`
+- `try`/`catch ME` with `ME.identifier` for specific handling
+- `onCleanup` to close files and restore state when a function exits or errors
 
 ## Documentation
-- H1 line: `%FUNCTIONNAME Brief description`
-- Include input/output specs, examples, and See also references
-- Use `%%` section breaks in scripts for Live Editor compatibility
+- H1 line: `%functionName - Brief description` (no period)
+- Syntax paragraphs such as `%   Y = computeArea(X) computes...`, then an optional example and `%   See also` with related names
+- Comment lines of 75 characters or fewer; no `%{ %}` block comments in help
+- `%%` section breaks in scripts for the Live Editor
 
 ## File Organization
-- One public function per file
-- Group related functions in packages (`+packageName/`)
-- Tests in `tests/` directory
-- Examples in `examples/` directory
+- One public function per file, plus local functions
+- Group related functions in namespaces (`+namespaceName/` folders)
+- Tests in `tests/`, examples in `examples/`

@@ -1,51 +1,54 @@
 ---
 name: matlab-explain
 description: Explain MATLAB code functionality, algorithms, and design decisions
-category: development
-parameters: []
-tags: [matlab, explain, understand, documentation, learning]
+argument-hint: "[file or code]"
 ---
 
 # /matlab-explain
 
 Provide explanations of MATLAB code, including algorithms, design patterns, and implementation details.
 
+Input: $ARGUMENTS
+
 ## Task
 
-You are a MATLAB expert educator. Analyze and explain MATLAB code in a manner that helps developers understand not just what the code does, but why and how it works.
+You are a MATLAB expert educator. Explain what the code does, why it is written that way, and how it works, so a developer can maintain and change it.
 
 ## Instructions
 
-1. **Analyze the code structure**:
+1. **Read the input**:
+   - A file path or function name: read that file, plus the local functions and project files it calls.
+   - Pasted code: explain the code as given.
+   - Empty input: explain the file the user has open or was last working on. If there is none, ask what to explain.
+
+2. **Analyze the code structure**:
    - Identify the main algorithm or pattern
    - Recognize MATLAB-specific features and idioms
-   - Detect performance optimizations
+   - Note functions that MATLAB has removed or no longer recommends
    - Find potential issues or improvements
 
-2. **Provide explanation**:
+3. **Provide the explanation**:
 
    ### Overview Section
-   - **Purpose**: What problem does this code solve?
-   - **Algorithm**: What approach or algorithm is used?
-   - **Complexity**: Time and space complexity analysis
-   - **Dependencies**: Required toolboxes or functions
+   - **Purpose**: what problem the code solves
+   - **Algorithm**: the approach or named algorithm
+   - **Complexity**: time and space complexity
+   - **Dependencies**: required toolboxes and the minimum release
 
    ### Detailed Walkthrough
-   ```markdown
+   ````markdown
    ## Code Explanation
 
    ### Main Function: `functionName`
-   **Purpose**: [Concise description of what the function does]
+   **Purpose**: [what the function does]
 
-   **Algorithm**: [Name of algorithm, e.g., "Quick Sort", "Gaussian Elimination", etc.]
+   **Algorithm**: [name of the algorithm, such as "Gaussian elimination"]
 
    ### Input/Output
    - **Inputs**:
-     - `param1` (type): Description and constraints
-     - `param2` (type): Description and constraints
-
+     - `param1` (type, size): description and constraints from the arguments block
    - **Outputs**:
-     - `result` (type): What the function returns
+     - `result` (type, size): what the function returns
 
    ### Step-by-Step Breakdown
 
@@ -53,7 +56,7 @@ You are a MATLAB expert educator. Analyze and explain MATLAB code in a manner th
    ```matlab
    % Code snippet
    ```
-   This section initializes... The reason for using this approach is...
+   This section initializes... It uses this approach because...
 
    #### Step 2: Main Processing (Lines X-Y)
    ```matlab
@@ -62,185 +65,154 @@ You are a MATLAB expert educator. Analyze and explain MATLAB code in a manner th
    Here the algorithm... The key insight is...
 
    ### MATLAB-Specific Features Used
-   - **Vectorization**: Lines X-Y use vectorized operations instead of loops for performance
-   - **Broadcasting**: Implicit expansion in line Z
-   - **Logical indexing**: Line W uses logical indexing for filtering
-   ```
+   - **Vectorization**: lines X-Y operate on whole arrays instead of looping
+   - **Implicit expansion**: line Z combines a matrix with a row vector (R2016b+)
+   - **Logical indexing**: line W filters with a logical mask
+   ````
 
-3. **Explain MATLAB idioms and patterns**:
-
-   ### Common MATLAB Patterns
+4. **Explain MATLAB idioms and patterns** the code uses:
    ```matlab
    % Pattern: Vectorization
    % Instead of:
-   for i = 1:length(x)
-       y(i) = sin(x(i));
+   for k = 1:numel(x)
+       y(k) = sin(x(k));
    end
    % MATLAB idiom:
-   y = sin(x);  % Operates on entire array at once
+   y = sin(x);  % Operates on the whole array
 
    % Pattern: Logical indexing
-   % Instead of:
+   % Instead of growing an array in a loop:
    result = [];
-   for i = 1:length(data)
-       if data(i) > threshold
-           result = [result, data(i)];
+   for k = 1:numel(data)
+       if data(k) > threshold
+           result(end+1) = data(k);
        end
    end
    % MATLAB idiom:
-   result = data(data > threshold);  % Direct filtering
+   result = data(data > threshold);
 
    % Pattern: Anonymous functions
-   f = @(x) x.^2 + 2*x + 1;  % Inline function definition
-   result = arrayfun(f, inputArray);  % Apply to each element
+   f = @(x) x.^2 + 2*x + 1;  % Element-wise operators make f accept arrays
+   result = f(inputArray);   % No arrayfun needed
+
+   % Pattern: Implicit expansion
+   centered = A - mean(A);   % Subtracts each column's mean (replaces bsxfun)
    ```
 
-4. **Mathematical explanation**:
-   ```markdown
+   When the code uses an outdated function, name the current replacement: `datenum` to `datetime`, `xlsread` to `readtable`, `csvread` to `readmatrix`, `containers.Map` to `dictionary`, `bsxfun` to implicit expansion, `eval` with a built-up name to a struct field `s.(name)` or a function handle.
+
+5. **Mathematical explanation**:
+   ````markdown
    ### Mathematical Background
 
-   The algorithm implements the following mathematical concept:
+   The algorithm computes a weighted sum of input features plus a bias:
 
    **Equation**: f(x) = Σ(xi * wi) + b
 
    Where:
-   - xi: Input features
-   - wi: Weights
-   - b: Bias term
+   - xi: input features
+   - wi: weights
+   - b: bias term
 
-   In MATLAB, this is efficiently computed using matrix multiplication:
+   In MATLAB, one matrix multiplication computes this for every row of X:
    ```matlab
    result = X * weights + bias;
    ```
+   Matrix multiplication calls optimized BLAS routines.
+   ````
 
-   This uses MATLAB's optimized BLAS libraries for performance.
-   ```
-
-5. **Performance analysis**:
+6. **Performance analysis**:
    ```markdown
    ### Performance Characteristics
 
    **Time Complexity**: O(n²) for the main loop, O(n log n) for sorting
-   **Space Complexity**: O(n) for storing intermediate results
+   **Space Complexity**: O(n) for intermediate results
 
-   **Optimization Techniques Used**:
-   1. **Preallocation** (line X): Avoids dynamic array growth
-   2. **Vectorization** (lines Y-Z): Eliminates loop overhead
-   3. **Built-in functions** (line W): Uses optimized C implementations
-   4. **Sparse matrices** (line V): Reduces memory for mostly-zero data
+   **Techniques Used**:
+   1. **Preallocation** (line X): avoids reallocating the array on every iteration
+   2. **Vectorization** (lines Y-Z): replaces an element-wise loop
+   3. **Built-in functions** (line W): compiled implementations
 
    **Potential Bottlenecks**:
-   - Line X: Nested loop could be vectorized
-   - Line Y: Consider using parfor for parallel execution
+   - Line X: `result(end+1) = ...` grows the array in a loop; preallocate it
+   - Line Y: the loop recomputes an invariant expression; move it before the loop
    ```
 
-6. **Visual explanations** (when applicable):
+   Point out likely bottlenecks from the code, and state that a profile (`profile on` or `timeit`) confirms where the time goes. Do not recommend parallel code or other optimizations without a measurement.
+
+7. **Visual explanations** (when applicable):
    ```matlab
-   % Visual representation of the algorithm
    % [Input Array]
    %     ↓
    % [Transform 1: Normalization]
    %     ↓
    % [Transform 2: Feature Extraction]
    %     ↓
-   % [Transform 3: Classification]
-   %     ↓
    % [Output Result]
    ```
 
-7. **Common pitfalls and gotchas**:
+8. **Common pitfalls and gotchas** specific to the code:
    ```markdown
-   ### Important Notes and Warnings
+   ### Important Notes
 
-   **Warning:** **Numerical Precision**: This algorithm may suffer from round-off errors
-      for very large matrices. Consider using extended precision if needed.
+   **Numerical precision**: `inv(A)*b` loses accuracy when A is ill-conditioned. `A\b` is faster and more accurate.
 
-   **Warning:** **Memory Usage**: For arrays larger than 10,000 elements, memory
-      consumption may be significant. Consider processing in chunks.
+   **Memory**: a 100,000-by-10,000 double matrix needs 8 GB. Check sizes before scaling up the input.
 
-   **Warning:** **MATLAB Version**: Uses features from R2019b+. For older versions,
-      replace the arguments block with inputParser.
+   **MATLAB release**: the arguments block requires R2019b, and `Name=Value` call syntax requires R2021a.
 
-   **Warning:** **Column vs Row Vectors**: MATLAB is column-major. This code assumes
-      column vectors for optimal performance.
+   **Array orientation**: MATLAB stores arrays in column-major order, and functions like `sum` and `mean` work down columns by default. Passing a row vector where a column is expected changes the result.
    ```
 
-8. **Comparison with alternatives**:
+9. **Comparison with alternatives**:
    ```markdown
    ### Alternative Approaches
 
-   **Current Implementation**: Uses eigenvalue decomposition
-   - Pros: Numerically stable, well-understood
-   - Cons: O(n³) complexity, memory intensive
+   **Current implementation**: eigenvalue decomposition (`eig`)
+   - Pros: numerically stable, well understood
+   - Cons: O(n³), dense memory
 
-   **Alternative 1**: SVD approach
-   - Pros: More stable for ill-conditioned matrices
-   - Cons: Slightly slower for well-conditioned cases
+   **Alternative 1**: singular value decomposition (`svd`)
+   - Pros: more stable for ill-conditioned matrices
+   - Cons: slower for well-conditioned cases
 
-   **Alternative 2**: Iterative methods
-   - Pros: Better for large sparse matrices
-   - Cons: Convergence not guaranteed
+   **Alternative 2**: iterative methods (`eigs` for sparse matrices)
+   - Pros: computes a few eigenvalues of large sparse matrices
+   - Cons: convergence depends on the problem
    ```
 
-9. **Learning resources**:
-   ```markdown
-   ### Further Reading
+10. **Further reading**: link the MATLAB documentation pages for the functions the code uses, such as [Vectorization](https://www.mathworks.com/help/matlab/matlab_prog/vectorization.html) and [Techniques to Improve Performance](https://www.mathworks.com/help/matlab/matlab_prog/techniques-for-improving-performance.html). Cite papers only when the code or its comments name them; do not invent references.
 
-   **MATLAB Documentation**:
-   - [Vectorization Guide](https://mathworks.com/help/matlab/matlab_prog/vectorization.html)
-   - [Performance Tips](https://mathworks.com/help/matlab/matlab_prog/techniques-for-improving-performance.html)
-
-   **Related Functions**:
-   - `similar_function1`: Does X (see `help similar_function1`)
-   - `similar_function2`: Alternative approach for Y
-
-   **Academic References**:
-   - Smith et al. (2020): "Efficient Algorithms in MATLAB"
-   - Johnson (2019): "Numerical Methods with MATLAB"
-   ```
-
-10. **Example usage and experimentation**:
+11. **Example usage and experimentation**:
     ```matlab
     %% Example Usage
-
-    % Basic example
     data = randn(100, 10);
     result = functionName(data);
+    plot(result)
+    title("Function Output")
 
-    % Visualize results
-    figure;
-    plot(result);
-    title('Function Output');
-
-    %% Experimentation Suggestions
-
-    % Try different input sizes to observe scaling
-    sizes = [10, 100, 1000, 10000];
+    %% Scaling Experiment
+    sizes = [1e2 1e3 1e4 1e5];
     times = zeros(size(sizes));
-    for i = 1:length(sizes)
-        data = randn(sizes(i), 10);
-        tic;
-        functionName(data);
-        times(i) = toc;
+    for k = 1:numel(sizes)
+        data = randn(sizes(k), 10);
+        times(k) = timeit(@() functionName(data));
     end
-
-    % Plot scaling behavior
-    figure;
-    loglog(sizes, times);
-    xlabel('Input Size');
-    ylabel('Execution Time (s)');
-    title('Algorithm Scaling');
+    loglog(sizes, times, "o-")
+    xlabel("Rows")
+    ylabel("Time (s)")
+    title("Algorithm Scaling")
     ```
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
-- Use **evaluate_matlab_code** to run code sections and include actual output alongside explanations
-- Use **check_matlab_code** to identify any Code Analyzer issues worth mentioning in the explanation
-- Use **detect_matlab_toolboxes** to note which toolboxes the code depends on
+- Use **evaluate_matlab_code** with `code` and `project_path` to run sections of the code and include actual output alongside the explanation.
+- Use **check_matlab_code** with `script_path` to find Code Analyzer issues worth mentioning, including messages that a function is not recommended or has been removed.
+- Use **detect_matlab_toolboxes** to confirm the release and the toolboxes the code depends on.
 
-If MCP is not available, explain the code statically and note that the user can verify behavior by running sections in MATLAB.
+Without MCP, explain the code statically and tell the user they can confirm behavior by running sections in MATLAB.
 
 ## Output
 
@@ -248,9 +220,11 @@ Generate:
 1. **High-level summary** of what the code does
 2. **Line-by-line explanation** with context
 3. **Algorithm analysis** including complexity
-4. **MATLAB-specific insights** and optimizations
-5. **Visual diagrams** (ASCII or description) when helpful
-6. **Performance considerations** and bottlenecks
+4. **MATLAB-specific insights**, including outdated functions and their replacements
+5. **Visual diagrams** (ASCII) when helpful
+6. **Performance considerations** and likely bottlenecks
 7. **Improvement suggestions** if applicable
 8. **Example usage** with expected outputs
-9. **Related concepts** and further learning resources
+9. **Related functions** and documentation links
+
+Related toolkit skills: [matlab-review-code](https://github.com/matlab/matlab-agentic-toolkit/tree/main/skills-catalog/matlab-core/matlab-review-code) and [matlab-modernize-code](https://github.com/matlab/matlab-agentic-toolkit/tree/main/skills-catalog/matlab-software-development/matlab-modernize-code)

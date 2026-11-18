@@ -18,11 +18,5 @@
     "optimization",
     "code-quality",
     "mcp"
-  ],
-  "mcp_servers": {
-    "matlab-mcp-core-server": {
-      "description": "Optional. Enables live code execution, Code Analyzer, test running, and toolbox detection. Install from https://github.com/matlab/matlab-mcp-core-server",
-      "required": false
-    }
-  }
+  ]
 }

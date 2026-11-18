@@ -1,353 +1,150 @@
 ---
 name: matlab-property-test
 description: Create property-based tests for mathematical invariants and properties
-category: testing
-parameters:
-  - name: function_name
-    description: Name of the function to test (optional)
-    required: false
-tags: [matlab, testing, property-based, invariants, verification]
-related_prompts:
-  - github.com/matlab/prompts/blob/main/prompts/programming/property-based-testing.md
+argument-hint: "[function name]"
 ---
 
 # /matlab-property-test
 
 Generate property-based tests that verify mathematical properties and invariants rather than specific outputs.
 
+Input: $ARGUMENTS
+
 ## Task
 
-You are a MATLAB property-based testing expert. Create tests that verify mathematical properties, invariants, and relationships that should hold for all valid inputs.
+You are a MATLAB property-based testing expert. Write class-based `matlab.unittest` tests that check properties, invariants, and relationships that must hold for every valid input, and run them over many generated inputs.
 
 ## Instructions
 
-1. **Identify properties to test**:
-   - Mathematical invariants (e.g., commutativity, associativity)
-   - Domain properties (e.g., output range, monotonicity)
-   - Algebraic properties (e.g., identity, inverse)
-   - Structural properties (e.g., shape preservation)
-   - Optimization properties (e.g., optimality conditions)
+1. **Find the code under test**:
+   - The input names a function or `.m` file. Locate it and read its source, its help text, and any `arguments` block to learn the valid input domain.
+   - If the input is empty, list the `.m` files in the current project that have no matching `<name>PropertyTest.m` and ask which one to test. Do not guess.
 
-2. **Generate property-based test class**:
+2. **Identify the properties and present them as a plan** before writing code. Each property states a relationship and the input domain where it holds:
+
+   | Category | Example property |
+   |---|---|
+   | Invariant | `norm(f(x)) == 1`, `sum(p) == 1`, `issorted(sort(x))` |
+   | Structural | `size(f(x)) == size(x)`, class or sparsity preserved |
+   | Domain | output finite, in range, nonnegative |
+   | Algebraic | idempotence `f(f(x)) == f(x)`, commutativity `f(a,b) == f(b,a)`, identity element |
+   | Inverse (round trip) | `decode(encode(x)) == x`, `norm(x) * f(x) == x` |
+   | Metamorphic | scaling, translation, permutation: `f(k*x) == f(x)`, `sum(x(perm)) == sum(x)` |
+   | Oracle | agreement with an independent or reference implementation |
+   | Optimality | gradient near zero at a returned minimum, constraints satisfied |
+
+3. **Generate inputs as named test parameters**, not loops:
+   - Test methods contain no `for`, `if`, `switch`, or `try/catch`. Each generated input is a parameter value, so each sample becomes its own test point and a failure names the sample that broke the property.
+   - Generate random samples in a `methods (Static, TestParameterDefinition)` method. Draw them from a local `RandStream` with a fixed seed so the suite is reproducible and the global generator is untouched.
+   - Add named edge samples next to the random ones: values near overflow and underflow (`1e200`, `1e-200`), a single element, mixed signs, and the boundaries of the valid domain. Random draws from `randn` rarely reach these values.
+   - Use 25 to 100 samples per property. More samples add test points and run time without adding much power when the edge samples are present.
+   - Combine parameters with the default `exhaustive` combination (every sample with every scale factor). For paired samples, such as `a` and `b` in a commutativity test, define both parameters with the same field names and use `ParameterCombination = 'sequential'`.
+
+4. **Write one property per test method**, following the house conventions:
+   - Name the file `<functionName>PropertyTest.m`, place it in `tests/`, and add the source folder with `PathFixture`.
+   - State the property in a one-line comment in each method.
+   - Compare floating-point results with `AbsTol`, `RelTol`, or both. Choose the tolerance from the expected rounding error: a few `eps` times the problem size or condition number. Starting points for double are `AbsTol=1e-14` and `RelTol=1e-12`.
+   - Use informal methods (`verifyEqual`, `verifySize`, `verifyLessThanOrEqual`). Use `verifyThat` with a constraint only when no informal method exists, such as `IsFinite`, `IsReal`, or `EveryElementOf`.
+   - Use `TestTags = {'Property'}` so the suite can be run or skipped separately from fast unit tests.
+   - Error conditions are not properties. Put them in the unit tests (`/matlab-test`).
+
+5. **Example**. This class tests `normalizeVector(x)`, which returns `x / norm(x)` for a finite, nonzero numeric vector and keeps its shape. The `Name=Value` syntax requires R2021a or later.
    ```matlab
-   classdef FunctionNamePropertyTest < matlab.unittest.TestCase
-       % FUNCTIONNAMEPROPERTYTEST Property-based tests for functionName
-       %
-       %   These tests verify mathematical properties and invariants
-       %   that should hold for all valid inputs.
-       %
-       %   Run all property tests:
-       %       results = runtests('FunctionNamePropertyTest');
+   classdef normalizeVectorPropertyTest < matlab.unittest.TestCase
+       % Property tests for normalizeVector: each property must hold for
+       % every generated sample. A failing test point names its sample.
+       %   results = runtests("normalizeVectorPropertyTest");
 
-       properties
-           NumRandomTests = 100  % Number of random inputs to test
-           Tolerance = 1e-10     % Numerical tolerance
+       properties (TestParameter)
+           sample   % generated by makeSamples
+           scale = struct('tiny', 1e-6, 'unit', 1, 'huge', 1e6);
+       end
+
+       methods (Static, TestParameterDefinition)
+           function sample = makeSamples()
+               stream = RandStream("twister", Seed=42);   % local stream, global rng untouched
+               sample = struct();
+               for k = 1:25
+                   n = randi(stream, [1 50]);
+                   sample.(sprintf('random%02d', k)) = randn(stream, n, 1);
+               end
+               sample.hugeValues = [1e200; -1e200];        % naive sqrt(sum(x.^2)) overflows
+               sample.tinyValues = [1e-200; 3e-200];       % naive version underflows to 0
+           end
        end
 
        methods (TestClassSetup)
-           function setupClass(testCase)
-               % Setup test environment
-               addpath('../src');
-               rng(42);  % Reproducible randomness
+           function addSourceToPath(testCase)
+               srcFolder = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'src');
+               testCase.applyFixture(matlab.unittest.fixtures.PathFixture(srcFolder));
            end
        end
 
-       methods (Test)
-           %% Identity Properties
-           function testIdentityElement(testCase)
-               % Verify: f(x, identity) = x
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   identity = getIdentityElement();
-                   result = functionName(x, identity);
-
-                   testCase.verifyEqual(result, x, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Identity element property violated');
-               end
+       methods (Test, TestTags = {'Property'})
+           function testUnitNorm(testCase, sample)
+               % Invariant: norm(f(x)) == 1
+               testCase.verifyEqual(norm(normalizeVector(sample)), 1, AbsTol=1e-14);
            end
 
-           function testInverseProperty(testCase)
-               % Verify: f(f_inverse(x)) = x
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   y = functionName(x);
-                   x_recovered = inverseFunctionName(y);
-
-                   testCase.verifyEqual(x_recovered, x, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Inverse property not satisfied');
-               end
+           function testShapePreserved(testCase, sample)
+               % Structural: size(f(x)) == size(x)
+               testCase.verifySize(normalizeVector(sample), size(sample));
            end
 
-           %% Algebraic Properties
-           function testCommutativity(testCase)
-               % Verify: f(a, b) = f(b, a)
-               for i = 1:testCase.NumRandomTests
-                   a = generateRandomInput();
-                   b = generateRandomInput();
-
-                   result1 = functionName(a, b);
-                   result2 = functionName(b, a);
-
-                   testCase.verifyEqual(result1, result2, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Commutativity property violated');
-               end
+           function testOutputFinite(testCase, sample)
+               % Domain: no Inf or NaN for any finite nonzero input
+               testCase.verifyThat(normalizeVector(sample), ...
+                   matlab.unittest.constraints.IsFinite);
            end
 
-           function testAssociativity(testCase)
-               % Verify: f(f(a, b), c) = f(a, f(b, c))
-               for i = 1:testCase.NumRandomTests
-                   a = generateRandomScalar();
-                   b = generateRandomScalar();
-                   c = generateRandomScalar();
-
-                   result1 = functionName(functionName(a, b), c);
-                   result2 = functionName(a, functionName(b, c));
-
-                   testCase.verifyEqual(result1, result2, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Associativity property violated');
-               end
+           function testIdempotent(testCase, sample)
+               % Algebraic: f(f(x)) == f(x)
+               once = normalizeVector(sample);
+               testCase.verifyEqual(normalizeVector(once), once, AbsTol=1e-14);
            end
 
-           function testDistributivity(testCase)
-               % Verify: f(a, g(b, c)) = g(f(a, b), f(a, c))
-               for i = 1:testCase.NumRandomTests
-                   a = generateRandomInput();
-                   b = generateRandomInput();
-                   c = generateRandomInput();
-
-                   result1 = functionName(a, otherFunction(b, c));
-                   result2 = otherFunction(functionName(a, b), ...
-                                          functionName(a, c));
-
-                   testCase.verifyEqual(result1, result2, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Distributivity property violated');
-               end
+           function testRoundTrip(testCase, sample)
+               % Inverse: norm(x) * f(x) == x
+               testCase.verifyEqual(norm(sample) * normalizeVector(sample), sample, ...
+                   RelTol=1e-14);
            end
 
-           %% Domain Properties
-           function testOutputRange(testCase)
-               % Verify output is within expected range
-               for i = 1:testCase.NumRandomTests
-                   input = generateRandomInput();
-                   output = functionName(input);
-
-                   % Check range constraints
-                   testCase.verifyGreaterThanOrEqual(output, 0, ...
-                       'Output below minimum bound');
-                   testCase.verifyLessThanOrEqual(output, 1, ...
-                       'Output above maximum bound');
-               end
+           function testScaleInvariant(testCase, sample, scale)
+               % Metamorphic: f(k*x) == f(x) for k > 0 (exhaustive: every sample, every scale)
+               testCase.verifyEqual(normalizeVector(scale * sample), normalizeVector(sample), ...
+                   AbsTol=1e-14);
            end
 
-           function testMonotonicity(testCase)
-               % Verify: if a <= b then f(a) <= f(b)
-               for i = 1:testCase.NumRandomTests
-                   a = generateRandomScalar();
-                   b = a + abs(randn());  % Ensure b > a
-
-                   result_a = functionName(a);
-                   result_b = functionName(b);
-
-                   testCase.verifyLessThanOrEqual(result_a, result_b, ...
-                       'Monotonicity property violated');
-               end
-           end
-
-           function testIdempotence(testCase)
-               % Verify: f(f(x)) = f(x)
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   once = functionName(x);
-                   twice = functionName(once);
-
-                   testCase.verifyEqual(once, twice, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Idempotence property violated');
-               end
-           end
-
-           %% Structural Properties
-           function testShapePreservation(testCase)
-               % Verify function preserves input shape
-               shapes = {[1 1], [10 1], [1 10], [5 5], [3 4 5]};
-
-               for shape = shapes
-                   input = rand(shape{1});
-                   output = functionName(input);
-
-                   testCase.verifySize(output, size(input), ...
-                       'Shape preservation violated');
-               end
-           end
-
-           function testLinearityProperty(testCase)
-               % Verify: f(ax + by) = af(x) + bf(y)
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   y = generateRandomInput();
-                   a = randn();
-                   b = randn();
-
-                   lhs = functionName(a*x + b*y);
-                   rhs = a*functionName(x) + b*functionName(y);
-
-                   testCase.verifyEqual(lhs, rhs, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Linearity property violated');
-               end
-           end
-
-           %% Optimization Properties
-           function testOptimalityCondition(testCase)
-               % Verify solution satisfies optimality conditions
-               for i = 1:testCase.NumRandomTests
-                   problem = generateRandomProblem();
-                   solution = functionName(problem);
-
-                   % Check first-order conditions
-                   gradient = computeGradient(problem, solution);
-                   testCase.verifyLessThan(norm(gradient), testCase.Tolerance, ...
-                       'Optimality condition not satisfied');
-
-                   % Check second-order conditions if applicable
-                   hessian = computeHessian(problem, solution);
-                   eigenvalues = eig(hessian);
-                   testCase.verifyGreaterThanOrEqual(min(eigenvalues), 0, ...
-                       'Second-order condition violated');
-               end
-           end
-
-           %% Metamorphic Properties
-           function testScaleInvariance(testCase)
-               % Verify: f(k*x) = k*f(x) or similar relationship
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   k = 10^(randn()*2);  % Random scale factor
-
-                   scaled_input = k * x;
-                   result_scaled = functionName(scaled_input);
-                   result_original = functionName(x);
-
-                   % Adjust expected relationship
-                   expected = k * result_original;  % Or k^2, sqrt(k), etc.
-
-                   testCase.verifyEqual(result_scaled, expected, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Scale invariance violated');
-               end
-           end
-
-           function testTranslationInvariance(testCase)
-               % Verify: f(x + c) = f(x) + g(c) for some g
-               for i = 1:testCase.NumRandomTests
-                   x = generateRandomInput();
-                   c = randn();
-
-                   result_translated = functionName(x + c);
-                   result_original = functionName(x);
-
-                   % Check if difference is consistent
-                   difference = result_translated - result_original;
-                   expected_difference = computeExpectedShift(c);
-
-                   testCase.verifyEqual(difference, expected_difference, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Translation invariance violated');
-               end
-           end
-
-           %% Consistency Properties
-           function testRoundTripProperty(testCase)
-               % Verify: decode(encode(x)) = x
-               for i = 1:testCase.NumRandomTests
-                   original = generateRandomInput();
-                   encoded = encode(original);
-                   decoded = decode(encoded);
-
-                   testCase.verifyEqual(decoded, original, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Round-trip property violated');
-               end
-           end
-
-           function testReferenceImplementation(testCase)
-               % Compare against known reference implementation
-               for i = 1:testCase.NumRandomTests
-                   input = generateRandomInput();
-
-                   result = functionName(input);
-                   reference = referenceImplementation(input);
-
-                   testCase.verifyEqual(result, reference, ...
-                       'RelTol', testCase.Tolerance, ...
-                       'Results differ from reference implementation');
-               end
-           end
-       end
-
-       methods (Access = private)
-           function input = generateRandomInput(testCase)
-               % Generate valid random input for the function
-               n = randi([1, 100]);
-               input = randn(n, n);
-           end
-
-           function scalar = generateRandomScalar(testCase)
-               scalar = randn();
-           end
-
-           function problem = generateRandomProblem(testCase)
-               % Generate random optimization problem
-               problem.A = randn(10, 10);
-               problem.b = randn(10, 1);
+           function testMatchesReference(testCase, sample)
+               % Oracle: agrees with an independent implementation
+               testCase.verifyEqual(normalizeVector(sample), normalize(sample, "norm"), ...
+                   AbsTol=1e-14);
            end
        end
    end
    ```
+   A naive implementation, `x / sqrt(sum(x.^2))`, passes every random sample in this class and fails 9 test points on `hugeValues` and `tinyValues`. That is the reason for the edge samples.
 
-3. **Property Categories**:
-   - **Algebraic**: Commutativity, associativity, distributivity
-   - **Functional**: Idempotence, inverse, identity
-   - **Analytical**: Continuity, differentiability, monotonicity
-   - **Numerical**: Stability, conditioning, precision
-   - **Structural**: Shape, type, sparsity preservation
-   - **Invariance**: Scale, translation, rotation invariance
-   - **Optimization**: Optimality, convergence, bounds
-
-4. **Property Test Patterns**:
-   - **Invariant**: Something that never changes
-   - **Round-trip**: Encode then decode equals original
-   - **Comparison**: Different algorithms give same result
-   - **Oracle**: Compare with known good implementation
-   - **Metamorphic**: Known input transformations
-
-5. **Best Practices**:
-   - Test with many random inputs (100-1000)
-   - Use appropriate numerical tolerances
-   - Document the mathematical property being tested
-   - Include counter-examples when property fails
-   - Test edge cases within properties
-   - Make tests deterministic with seeded randomness
+6. **When a property fails**:
+   - The test point name identifies the sample, for example `testUnitNorm(sample=tinyValues)`. Reproduce it by calling `normalizeVectorPropertyTest.makeSamples()` and taking that field.
+   - Decide whether the code is wrong, the property is wrong (it does not hold on part of the domain), or the tolerance is too tight. Restrict the domain or fix the code. Do not loosen a tolerance only to make a test pass.
+   - Add each counterexample as a named edge sample so it stays covered.
 
 ## MCP Integration
 
-When the MATLAB MCP Core Server is available:
+When the MATLAB MCP Server is available:
 
-- Use **run_matlab_test_file** to execute property tests and verify all properties hold
-- Use **evaluate_matlab_code** to test random input generation produces valid test data
-- Report which properties passed and any that failed with counterexamples
+- Use **check_matlab_code** on the test file (`script_path`) and fix every Code Analyzer issue.
+- Use **evaluate_matlab_code** (`code`, and `project_path` for the project folder) to call the `TestParameterDefinition` method and confirm the samples are valid inputs before running the suite.
+- Use **run_matlab_test_file** on the test file (`script_path`) and report which properties held and which failed, with the failing sample names and values.
 
-If MCP is not available, generate property tests as normal and instruct the user to run them manually.
+If the MATLAB MCP Server is not available, write the tests and tell the user to run `results = runtests("tests", Tag="Property")`.
 
 ## Output
 
-Generate:
-1. Complete property-based test class
-2. Helper functions for generating test inputs
-3. Documentation of properties being tested
-4. Suggestions for additional properties to verify
+1. The list of properties with the input domain for each, confirmed before writing code
+2. The complete property test class, ready to save as `tests/<functionName>PropertyTest.m`
+3. The test results, with counterexamples for any failed property
+4. Further properties worth checking
+
+Toolkit skill (conventions for class-based tests, parameters, and tolerances): https://github.com/matlab/matlab-agentic-toolkit/tree/main/skills-catalog/matlab-software-development/matlab-write-tests

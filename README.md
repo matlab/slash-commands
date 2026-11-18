@@ -1,137 +1,106 @@
 # MATLAB Slash Commands
 
-Slash commands for MATLAB development workflows across multiple AI coding agents. Provides documentation generation, testing, optimization, code analysis, and live execution via MCP.
+MATLAB Slash Commands is a set of slash commands for MATLAB development in AI coding agents.
+The commands write help text, tests, Live Scripts, and READMEs.
+They review, speed up, and explain code.
+Each command follows the matching skill in the [MATLAB Agentic Toolkit](https://github.com/matlab/matlab-agentic-toolkit).
+With the [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) connected, the commands also run the code they write and check the results in MATLAB.
 
-## Multi-Agent Support
+## Supported Agents
 
-| Agent | Format | Commands | Install |
-|-------|--------|----------|---------|
-| **Claude Code** | Plugin | All 13 | `/plugin install github:matlab/slash-commands` |
-| **GitHub Copilot** | `.prompt.md` | 6 key commands | Copy `copilot/prompts/` to `.github/prompts/` |
-| **Cursor IDE** | `.mdc` rules | Rules (always-on) | Copy `cursor/rules/` to `.cursor/rules/` |
-| **Any MCP agent** | MCP server | Via MATLAB MCP Core Server | See [MCP Guide](docs/mcp-integration.md) |
-
-## MCP Integration
-
-When the [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) is connected, commands gain live capabilities:
-
-| MCP Tool | What It Enables |
-|----------|----------------|
-| `check_matlab_code` | Real Code Analyzer diagnostics |
-| `evaluate_matlab_code` | Execute MATLAB expressions, benchmark code |
-| `run_matlab_file` | Run .m files and return output |
-| `run_matlab_test_file` | Execute test suites and report results |
-| `detect_matlab_toolboxes` | List installed toolboxes |
-
-All commands work without MCP. They generate code and instructions as before. MCP adds validation, execution, and measurement. See [MCP Integration Guide](docs/mcp-integration.md).
+| Agent | Format | Commands |
+|-------|--------|----------|
+| Claude Code | Plugin | All 13 |
+| GitHub Copilot | `.prompt.md` files | 6: check, docs, optimize, readme, run, test |
+| Cursor | `.mdc` rule | One rule that applies to `.m`, `.mlx`, and `.mlapp` files |
 
 ## Installation
 
-### Claude Code (Full Support)
+### Claude Code
 
 ```bash
-/plugin install github:matlab/slash-commands
+/plugin marketplace add matlab/slash-commands
+/plugin install matlab-slash-commands@matlab-slash-commands
 ```
+
+To try changes to the commands without installing, clone the repository and start Claude Code with `claude --plugin-dir ./slash-commands`.
 
 ### GitHub Copilot
 
-```bash
-cp -r copilot/prompts/ .github/prompts/
-```
-
-### Cursor IDE
+From a clone of this repository, copy the prompt files into your project:
 
 ```bash
-mkdir -p .cursor/rules
-cp cursor/rules/matlab-development.mdc .cursor/rules/
+mkdir -p /path/to/project/.github/prompts
+cp copilot/prompts/*.prompt.md /path/to/project/.github/prompts/
 ```
 
-### Manual / Development
+### Cursor
+
+From a clone of this repository, copy the rule into your project:
 
 ```bash
-git clone https://github.com/matlab/slash-commands.git
+mkdir -p /path/to/project/.cursor/rules
+cp cursor/rules/matlab-development.mdc /path/to/project/.cursor/rules/
 ```
 
-## Available Commands
+See the [Installation Guide](docs/installation.md) for updating, uninstalling, and troubleshooting.
 
-### Core Commands
+## Commands
 
-| Command | Description | MCP Enhanced |
-|---------|-------------|:------------:|
-| `/matlab-readme` | Generate project README | Yes |
-| `/matlab-docs` | Document MATLAB functions | Yes |
-| `/matlab-livescript` | Create formatted Live Scripts | Yes |
-| `/matlab-check` | Run Code Analyzer on code | **MCP** |
-| `/matlab-run` | Execute MATLAB code or files | **MCP** |
+| Command | What it does | With the MATLAB MCP Server, it also |
+|---------|--------------|-------------------------------------|
+| `/matlab-readme` | Writes a README for a MATLAB project | Confirms the required products and runs the examples |
+| `/matlab-docs` | Writes help text for a function | Runs `help` and the example |
+| `/matlab-livescript` | Writes a plain-text Live Script | Checks the release and toolboxes, and runs the script |
+| `/matlab-check` | Reviews code for errors, style, and outdated functions | Runs the Code Analyzer |
+| `/matlab-run` | Runs a MATLAB file or expression | Requires the server to run code |
+| `/matlab-test` | Writes class-based unit tests | Runs the new tests |
+| `/matlab-property-test` | Writes tests for properties that must hold for any input | Runs the new tests |
+| `/matlab-run-tests` | Runs a test suite and reports results and coverage | Requires the server to run tests |
+| `/matlab-optimize` | Speeds up code and checks that the results do not change | Profiles the code and times it before and after |
+| `/matlab-errors` | Adds `arguments` blocks and error identifiers | Runs bad inputs to confirm each error |
+| `/matlab-explain` | Explains what code does and how | Runs sections to confirm behavior |
+| `/matlab-refine` | Turns a request into a MATLAB specification | Confirms the release and installed toolboxes |
+| `/matlab-toolboxes` | Lists installed MathWorks products | Lists the products of the running MATLAB |
 
-### Testing Commands
+Without the server, `/matlab-run` and `/matlab-run-tests` check the code and give you the MATLAB commands to run.
+The other commands write their output and tell you what to run in MATLAB to confirm it.
+The [MCP Integration Guide](docs/mcp-integration.md) covers server setup and the server tools the commands use.
 
-| Command | Description | MCP Enhanced |
-|---------|-------------|:------------:|
-| `/matlab-test` | Generate unit tests | Yes |
-| `/matlab-property-test` | Create property-based tests | Yes |
-| `/matlab-run-tests` | Run test suite and report results | **MCP** |
+## Example
 
-### Quality Commands
+Take a request from specification to a tested, documented function.
+You write `processData` from the specification after the first command.
 
-| Command | Description | MCP Enhanced |
-|---------|-------------|:------------:|
-| `/matlab-optimize` | Optimize code performance | Yes |
-| `/matlab-errors` | Add error handling and validation | Yes |
-
-### Development Commands
-
-| Command | Description | MCP Enhanced |
-|---------|-------------|:------------:|
-| `/matlab-explain` | Explain code functionality | Yes |
-| `/matlab-refine` | Refine requirements into specs | Yes |
-| `/matlab-toolboxes` | Detect installed toolboxes | **MCP** |
-
-**MCP Enhanced** = works without MCP but gains live capabilities with it
-**MCP** = primarily designed for MCP, with static fallback
-
-## Quick Start
-
-### Generate and Validate Tests (with MCP)
 ```
-/matlab-test myFunction        # Generate tests
-/matlab-run-tests              # Run them via MCP, see pass/fail
-```
-
-### Optimize with Real Benchmarks (with MCP)
-```
-/matlab-optimize               # Optimizes and benchmarks before/after
-```
-
-### Full Development Pipeline
-```
-/matlab-refine "process sensor data"    # Clarify requirements
-/matlab-test processData                # Generate tests
-/matlab-check processData.m            # Run Code Analyzer
-/matlab-optimize                        # Optimize performance
-/matlab-errors                          # Add error handling
-/matlab-docs processData               # Generate documentation
-/matlab-readme                          # Generate project README
+/matlab-refine process sensor data
+/matlab-test processData
+/matlab-check processData.m
+/matlab-optimize processData.m
+/matlab-errors processData.m
+/matlab-docs processData
+/matlab-readme
 ```
 
 ## Documentation
 
-- [Command Reference](docs/command-reference.md): Reference for all 13 commands
-- [MCP Integration Guide](docs/mcp-integration.md): Setup and usage with MATLAB MCP Core Server
-- [Cross-Agent Support](docs/cross-agent-support.md): Using commands with Copilot, Cursor, etc.
-- [Usage Guide](docs/usage-guide.md): Development patterns and best practices
-- [Installation Guide](docs/installation.md): Setup instructions for all agents
-- [Examples](examples/): Complete workflow examples
+- [Command Reference](docs/command-reference.md): all 13 commands
+- [MCP Integration Guide](docs/mcp-integration.md): setup and use with the MATLAB MCP Server
+- [Cross-Agent Support](docs/cross-agent-support.md): Copilot and Cursor formats
+- [Usage Guide](docs/usage-guide.md): development patterns
+- [Installation Guide](docs/installation.md): setup for each agent
+- [Examples](examples/): complete workflows
 
 ## Requirements
 
-- An AI coding agent (Claude Code, GitHub Copilot, Cursor, or any MCP-compatible agent)
-- MATLAB development environment (for running generated code)
-- Optional: [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) for live execution
+- Claude Code, GitHub Copilot, or Cursor
+- MATLAB, to run the code the commands write
+- Optional: the [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server), which requires MATLAB R2021a or later
+- Live Scripts from `/matlab-livescript` require MATLAB R2025a or later
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding commands, improving existing ones, and maintaining cross-agent formats.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add commands, change existing ones, and keep the Copilot and Cursor versions in step.
 
 ## License
 
@@ -141,6 +110,7 @@ Copyright (c) 2025, The MathWorks, Inc.
 
 ## Related Projects
 
-- [matlab/matlab-mcp-core-server](https://github.com/matlab/matlab-mcp-core-server): MATLAB MCP server for AI agent integration
-- [matlab/prompts](https://github.com/matlab/prompts): MATLAB prompts for AI assistants and copilots
-- [matlab/skills](https://github.com/matlab/skills): Agents Skills for MATLAB
+- [matlab/matlab-agentic-toolkit](https://github.com/matlab/matlab-agentic-toolkit): MATLAB skills and tools for AI agents
+- [matlab/matlab-mcp-server](https://github.com/matlab/matlab-mcp-server): the MATLAB MCP Server
+- [matlab/prompts](https://github.com/matlab/prompts): MATLAB prompts for AI coding assistants
+- [matlab/agent-skills-playground](https://github.com/matlab/agent-skills-playground): prototype Agent Skills for MATLAB and Simulink, formerly `matlab/skills`

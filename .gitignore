@@ -189,3 +189,6 @@ scratch/
 
 # Superpowers plan files
 docs/superpowers/
+
+# Personal Claude Code settings
+.claude/settings.local.json

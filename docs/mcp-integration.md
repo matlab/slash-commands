@@ -1,128 +1,166 @@
 # MCP Integration Guide
 
-This guide explains how the MATLAB Slash Commands use the MATLAB MCP Core Server for live code execution, testing, and analysis.
+This guide describes how to connect the [MATLAB MCP Server](https://github.com/matlab/matlab-mcp-server) to your agent and how the slash commands use it.
 
-## What is MCP?
+## The MATLAB MCP Server
 
-The Model Context Protocol (MCP) is a universal standard for connecting AI agents to external tools. The [MATLAB MCP Core Server](https://github.com/matlab/matlab-mcp-core-server) provides 5 tools that any MCP-compatible AI agent can use:
+The MATLAB MCP Server connects AI agents to MATLAB through the Model Context Protocol (MCP).
+It works with any agent that supports MCP and provides five tools:
 
-| Tool | Description |
-|------|-------------|
-| `check_matlab_code` | Run MATLAB Code Analyzer on a .m file (static analysis) |
-| `evaluate_matlab_code` | Execute MATLAB code and return command window output |
-| `run_matlab_file` | Run a .m script file and return output |
-| `run_matlab_test_file` | Execute a MATLAB test file and return comprehensive results |
-| `detect_matlab_toolboxes` | List installed MATLAB toolboxes and versions |
+| Tool | What it does |
+|------|--------------|
+| `check_matlab_code` | Runs the Code Analyzer on a `.m` file without running the file |
+| `evaluate_matlab_code` | Runs MATLAB code and returns the Command Window output |
+| `run_matlab_file` | Runs a `.m` or `.p` script and returns the output |
+| `run_matlab_test_file` | Runs a test file and returns the test results |
+| `detect_matlab_toolboxes` | Lists the installed MATLAB release and toolboxes, with versions |
 
-The server also exposes MCP resources:
+The server also provides two MCP resources:
 
-| Resource | URI | Description |
-|----------|-----|-------------|
-| MATLAB Coding Guidelines | `guidelines://coding` | Coding standards for readability and collaboration |
-| Plain Text Live Code Guidelines | `guidelines://plain-text-live-code` | Rules for plain text Live Scripts (R2025a+) |
+| Resource | URI | Contents |
+|----------|-----|----------|
+| `matlab_coding_guidelines` | `guidelines://coding` | MATLAB coding standards for naming, formatting, comments, performance, and error handling |
+| `plain_text_live_code_guidelines` | `guidelines://plain-text-live-code` | Rules for plain-text Live Scripts, which run in MATLAB R2025a or later |
 
 ## Setup
 
 ### Prerequisites
 
-- MATLAB R2020b or later installed and on the system PATH
-- Download the latest binary for your platform from the [GitHub releases](https://github.com/matlab/matlab-mcp-core-server/releases)
+- MATLAB R2021a or later, on the system PATH
+- The server binary for your platform from the [latest release](https://github.com/matlab/matlab-mcp-server/releases/latest)
 
-### Configure Your AI Agent
+The [Agentic Toolkit Installer](https://github.com/matlab/agentic-toolkit-installer) sets up the server.
+To set it up manually, follow the steps below.
+On macOS, the server README gives the download commands for Apple silicon and Intel.
+Before you run the binary on macOS, make it executable with `chmod +x`.
 
-#### Claude Code
+### Claude Code
 
 ```bash
-claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-core-server-binary
+claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-server-binary
 ```
 
-With startup options:
+To pass server arguments, add them after the `--` separator:
+
 ```bash
-claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-core-server-binary --initial-working-folder=/home/username/myproject
+claude mcp add --transport stdio matlab -- /fullpath/to/matlab-mcp-server-binary --initial-working-folder=/home/username/myproject
 ```
 
-Remove with: `claude mcp remove matlab`
+To remove the server, run `claude mcp remove matlab`.
 
-#### Claude Desktop
+### Claude Desktop
 
-1. Download the `matlab-mcp-core-server.mcpb` bundle from the [latest release](https://github.com/matlab/matlab-mcp-core-server/releases)
-2. Double-click the `.mcpb` file, or install via Settings > Extensions > Advanced Settings > Install Extension
-3. Configure arguments via Settings > Extensions > Configure
+1. Install the Filesystem extension so that Claude can read and write your files.
+   In **Settings > Extensions > Browse extensions**, search for Filesystem, install it, select the folders it can access, and enable it.
+2. Download `matlab-mcp-server.mcpb` from the [latest release](https://github.com/matlab/matlab-mcp-server/releases/latest).
+3. Double-click the file and click **Install**, or install it from **Settings > Extensions > Advanced Settings > Install Extension**.
+4. To set server arguments, open **Settings > Extensions > Configure**.
 
-#### GitHub Copilot (VS Code)
+### GitHub Copilot in VS Code
 
-Add to your workspace `mcp.json`:
+Create `.vscode/mcp.json` in your workspace:
+
 ```json
 {
   "servers": {
     "matlab": {
       "type": "stdio",
-      "command": "/fullpath/to/matlab-mcp-core-server-binary",
+      "command": "/fullpath/to/matlab-mcp-server-binary",
       "args": []
     }
   }
 }
 ```
 
-See [VS Code MCP documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for more details.
+On Windows, escape the backslashes in paths, for example `C:\\tools\\matlab-mcp-server-windows-x64.exe`.
+For details, see [Add and manage MCP servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
 
-#### Cursor IDE
+### Cursor
 
-Add to `.cursor/mcp.json`:
+Add the server to `.cursor/mcp.json` in your project:
+
 ```json
 {
   "mcpServers": {
     "matlab": {
-      "command": "/fullpath/to/matlab-mcp-core-server-binary",
+      "command": "/fullpath/to/matlab-mcp-server-binary",
       "args": []
     }
   }
 }
 ```
 
-### Server Configuration Arguments
+### Server Arguments
 
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `--matlab-root` | MATLAB installation path (without `/bin`) | First MATLAB on PATH |
-| `--initialize-matlab-on-startup=true` | Start MATLAB immediately instead of on first tool call | `false` (lazy start) |
-| `--initial-working-folder` | Set MATLAB's startup directory | Platform-dependent user directory |
-| `--matlab-display-mode` | `desktop` (default) or `nodesktop` for headless operation | `desktop` |
-| `--disable-telemetry=true` | Disable anonymized usage collection | `false` |
+| Argument | What it does | Default |
+|----------|--------------|---------|
+| `--matlab-root` | MATLAB installation folder to start, without `/bin` | First MATLAB on the system PATH |
+| `--initialize-matlab-on-startup=true` | Starts MATLAB when the server starts | MATLAB starts on the first tool call |
+| `--initial-working-folder` | Folder where MATLAB starts | The agent's first MCP root; otherwise, your home folder on Linux or your Documents folder on Windows and macOS |
+| `--matlab-display-mode` | `desktop` shows the MATLAB desktop, `nodesktop` hides it | `desktop` |
+| `--matlab-session-mode` | `new` starts a new MATLAB session, `existing` connects to a running session, `auto` tries to connect and otherwise starts a new session | `auto` |
+| `--extension-file` | JSON file that defines custom MCP tools; repeat the argument for multiple files | None |
+| `--log-folder` | Folder for server log files | The system temporary folder |
+| `--log-level` | `debug`, `info`, `warn`, or `error` | `info` |
+| `--disable-telemetry=true` | Turns off anonymized usage data collection | Collection on |
 
-### Verify Connection
+You can also set each argument as an environment variable.
+To form the variable name, add the prefix `MW_MCP_SERVER_`, convert the argument name to uppercase, and replace hyphens with underscores, for example `MW_MCP_SERVER_MATLAB_ROOT`.
+Command-line arguments take precedence over environment variables.
 
-Run `/matlab-toolboxes` (Claude Code) to verify the MCP server is connected. You should see a list of installed MATLAB toolboxes.
+To connect to a MATLAB session that is already open (R2023a or later), run the server once with `--setup-matlab`, and then run `shareMATLABSession()` in that session.
+For the full steps, see the [server README](https://github.com/matlab/matlab-mcp-server#arguments).
 
-## How Commands Use MCP
+### Check the Connection
 
-### Commands That Benefit Most
-| Command | Primary MCP Tool | Enhancement |
-|---------|-----------------|-------------|
-| `/matlab-check` | `check_matlab_code` | Real Code Analyzer diagnostics |
-| `/matlab-run` | `evaluate_matlab_code`, `run_matlab_file` | Live code execution |
-| `/matlab-run-tests` | `run_matlab_test_file` | Actual test results |
-| `/matlab-toolboxes` | `detect_matlab_toolboxes` | Real toolbox inventory |
-| `/matlab-test` | `run_matlab_test_file` | Generate + verify tests pass |
-| `/matlab-optimize` | `evaluate_matlab_code` | Benchmark before/after |
+In Claude Code, run `/matlab-toolboxes`.
+When the server is connected, the command lists the products installed in the MATLAB session that the server uses.
 
-### Graceful Degradation
-All commands work without MCP. They generate code and instructions as before. MCP adds the ability to validate, execute, and measure in real-time.
+## How the Commands Use the Server
 
-## Headless Mode
+When the server is connected, every command checks its output in MATLAB.
 
-Set `--matlab-display-mode=nodesktop` to run MATLAB without the desktop GUI. This is useful for agent workflows where you don't need the MATLAB desktop open. Note that GUI-dependent commands (e.g., `plot`) will still open windows even in `nodesktop` mode.
+| Command | Tools it uses | What the server adds |
+|---------|---------------|----------------------|
+| `/matlab-check` | `check_matlab_code`, `evaluate_matlab_code`, `guidelines://coding` | Code Analyzer results for the file |
+| `/matlab-run` | `evaluate_matlab_code`, `run_matlab_file`, `run_matlab_test_file`, `check_matlab_code`, `detect_matlab_toolboxes` | Runs the code and selects the tool based on the input |
+| `/matlab-run-tests` | `run_matlab_test_file`, `evaluate_matlab_code`, `check_matlab_code`, `detect_matlab_toolboxes` | Test results and coverage |
+| `/matlab-test` | `run_matlab_test_file`, `evaluate_matlab_code`, `check_matlab_code`, `detect_matlab_toolboxes` | Runs the new tests |
+| `/matlab-property-test` | `run_matlab_test_file`, `evaluate_matlab_code`, `check_matlab_code` | Runs the new tests |
+| `/matlab-optimize` | `evaluate_matlab_code`, `run_matlab_file`, `run_matlab_test_file`, `check_matlab_code`, `detect_matlab_toolboxes` | Profiles the code, times it before and after, and checks the results match |
+| `/matlab-errors` | `evaluate_matlab_code`, `run_matlab_test_file`, `check_matlab_code`, `detect_matlab_toolboxes` | Runs invalid inputs to confirm each error |
+| `/matlab-docs` | `evaluate_matlab_code`, `check_matlab_code` | Runs `help` and the example |
+| `/matlab-readme` | `evaluate_matlab_code`, `run_matlab_file`, `check_matlab_code`, `detect_matlab_toolboxes` | Confirms the required products and runs the examples |
+| `/matlab-livescript` | `evaluate_matlab_code`, `run_matlab_file`, `check_matlab_code`, `detect_matlab_toolboxes`, `guidelines://plain-text-live-code` | Checks the release and toolboxes, and runs the script |
+| `/matlab-explain` | `evaluate_matlab_code`, `check_matlab_code`, `detect_matlab_toolboxes` | Runs sections to confirm behavior |
+| `/matlab-refine` | `evaluate_matlab_code`, `detect_matlab_toolboxes` | Confirms the release and installed toolboxes |
+| `/matlab-toolboxes` | `detect_matlab_toolboxes`, `evaluate_matlab_code` | Lists the products installed in the running MATLAB session |
+
+### Without the Server
+
+`/matlab-run` and `/matlab-run-tests` check the code and provide the MATLAB commands to run.
+The other commands write their output and state what to run in MATLAB to confirm it.
+
+## Running Without the Desktop
+
+With `--matlab-display-mode=nodesktop`, MATLAB runs without its desktop.
+Commands that need a graphical interface, such as `edit`, `open`, `open_system`, `uifigure`, and `appdesigner`, still open windows.
 
 ## Troubleshooting
 
-### MCP Server Not Connecting
-1. Verify MATLAB is installed and on the PATH
-2. Check that the binary path in your MCP configuration is correct
-3. Ensure MATLAB is not blocked by firewall or antivirus software
-4. Try running the binary directly to check for error messages
+### The Server Does Not Connect
 
-### Slow First Response
-By default, MATLAB starts on the first tool call (lazy start). The first MCP call may be slow as MATLAB launches. Use `--initialize-matlab-on-startup=true` to start MATLAB when the server launches instead.
+1. Check that MATLAB R2021a or later is installed and on the system PATH, or set `--matlab-root`.
+2. Check the binary path in your agent's MCP configuration.
+3. Run the binary with `--version` to confirm it starts.
+4. Run the server with `--log-level=debug` and read the log in the log folder.
 
-### Toolbox Not Detected
-Ensure the toolbox is installed and licensed. Run `ver` in MATLAB directly to confirm.
+### The First Call Is Slow
+
+By default, MATLAB starts on the first tool call.
+To start MATLAB when the server starts, use `--initialize-matlab-on-startup=true`.
+
+### A Toolbox Is Missing
+
+Check that the toolbox is installed and licensed.
+Run `ver` in the MATLAB installation that the server uses, which `--matlab-root` sets.

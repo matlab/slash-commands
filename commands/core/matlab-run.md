@@ -1,68 +1,65 @@
 ---
 name: matlab-run
 description: Execute MATLAB code or files via MCP
-category: core
-parameters:
-  - name: file_or_expression
-    description: File path to run or MATLAB expression to evaluate
-    required: false
-tags: [matlab, execution, mcp, run, evaluate]
+argument-hint: "[file or expression]"
 ---
 
 # /matlab-run
 
-Execute MATLAB code or files and display results.
+Run a MATLAB file or expression through the MATLAB MCP Server and report the results.
+
+Input: $ARGUMENTS
 
 ## Task
 
-You are a MATLAB execution assistant. Run MATLAB code via the MCP Core Server and present results clearly, handling errors and formatting output.
+You are a MATLAB execution assistant. Run MATLAB code with the right MCP tool, present the output clearly, and diagnose failures from the actual error.
 
 ## Instructions
 
-1. **Identify what to run**:
-   - If a `.m` file path is given, use `run_matlab_file`
-   - If a MATLAB expression is given, use `evaluate_matlab_code`
-   - If code is selected in the editor, use `evaluate_matlab_code`
-   - If no input, run the current file
+1. **Choose the tool from the input**:
+   - A script (`.m` file with no `function` or `classdef` line): `run_matlab_file`.
+   - A test file (a class that inherits from `matlab.unittest.TestCase`): `run_matlab_test_file`.
+   - A function file: `evaluate_matlab_code` with a call that passes inputs, such as `y = smoothSignal(x, 9)`. Ask for input values if the function requires them and the user gave none.
+   - A MATLAB expression or pasted code: `evaluate_matlab_code`.
+   - Empty input: run the file the user has open or was last working on. If there is none, ask what to run.
 
-2. **Pre-execution checks**:
-   - Use `check_matlab_code` to verify there are no errors before running
-   - Use `detect_matlab_toolboxes` to confirm required toolboxes are available
-   - Warn the user about any issues before executing
+2. **Check before running**:
+   - Run `check_matlab_code` on the file. Stop and report errors the Code Analyzer finds, such as `'X' has been removed`, instead of running code that cannot succeed.
+   - If the code calls toolbox functions, compare `detect_matlab_toolboxes` with the products the code needs.
 
-3. **Execute and present results**:
-   - Run the code via MCP
-   - Format output clearly (tables, matrices, text)
-   - Display any figures or plots (describe if not renderable)
-   - Report execution time
-   - Show workspace variables created/modified
+3. **Run and present the results**:
+   - Show the Command Window output. Format tables and matrices readably; for large arrays, show the size and a preview instead of every value.
+   - Describe any figures. To keep an image, save it with `exportgraphics(gcf, "result.png")`.
+   - Report the elapsed time when the run takes more than a few seconds. For timing comparisons, use `timeit` instead of a single run.
+   - After a script runs, list the variables it created with `whos` through `evaluate_matlab_code`. The base workspace persists between MCP calls in a session.
 
 4. **Handle errors**:
-   - If execution fails, parse the error message
-   - Suggest fixes based on the error
-   - Offer to re-run after applying fixes
+   - Quote the error message and the file and line it came from.
+   - When the error comes from inside a MathWorks function, look for the cause in the user's code that called it.
+   - Check the common causes first: `Undefined function or variable` (a missing toolbox, a path problem, or a typo; check with `which` and `detect_matlab_toolboxes`), `Index exceeds` (check `size`), `Arrays have incompatible sizes` (a row and column mismatch).
+   - Suggest a fix and offer to run again after it is applied. For deeper investigation, offer to debug before starting.
+
+5. **Pitfalls**:
+   - In MATLAB without a desktop (`desktop('-inuse')` returns false), breakpoints that pause, such as `dbstop if error`, hang the MCP call. Use `try`/`catch` and print the state instead.
+   - Never run `restoredefaultpath`; it removes the MCP server's own files from the path.
 
 ## MCP Integration
 
-This command requires the MATLAB MCP Core Server.
+This command requires the MATLAB MCP Server:
 
-### With MCP Available
-- Use **run_matlab_file** for .m files
-- Use **evaluate_matlab_code** for expressions and code snippets
-- Use **check_matlab_code** for pre-execution validation
-- Use **detect_matlab_toolboxes** for dependency checking
+- **run_matlab_file** with `script_path`: run a script.
+- **evaluate_matlab_code** with `code` and `project_path`: run expressions, function calls, and short diagnostics.
+- **run_matlab_test_file** with `script_path`: run a test file and get structured results.
+- **check_matlab_code** with `script_path`: check the file before running it.
+- **detect_matlab_toolboxes**: confirm the release and installed toolboxes.
 
-### Without MCP
-If MCP is not available, this command cannot execute code directly. Instead:
-- Validate syntax statically
-- Provide the code ready to copy-paste into MATLAB
-- Suggest running via: `run('filename.m')` or direct expression evaluation
-- Recommend setting up the MATLAB MCP Core Server for live execution
+Without MCP, this command cannot run code. Check the code statically and give the user the commands to run in MATLAB: the script name (`analyzeData`) for a script in the current folder or on the path, `run("C:/work/analyzeData.m")` for a script in another folder, or `matlab -batch "analyzeData"` from a system terminal. Recommend setting up the MATLAB MCP Server for live runs.
 
 ## Output
 
-Generate:
-1. **Execution results** formatted clearly
-2. **Timing information** (elapsed time)
-3. **Error details and fixes** if execution failed
-4. **Workspace summary** of variables created
+1. **What ran**, and with which tool
+2. **Results**: Command Window output, figures, and workspace variables
+3. **Elapsed time** for long runs
+4. **Error details and a proposed fix** if the run failed
+
+Reference: [MATLAB Agentic Toolkit skill matlab-debug-code](https://github.com/matlab/matlab-agentic-toolkit/tree/main/skills-catalog/matlab-core/matlab-debug-code), for diagnosing failed runs
